@@ -10,7 +10,7 @@ An offline-first, multi-module Android application built with **Jetpack Compose*
 
 | Live Barcode Scanner | Macro Breakdown & Nutri-Score | Offline Scan History |
 | :---: | :---: | :---: |
-| *(Add screenshot / GIF here)* | *(Add screenshot here)* | *(Add screenshot here)* |
+| *Work in Progress* | *Work in Progress* | *Work in Progress* |
 
 ---
 
