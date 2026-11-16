@@ -11,6 +11,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.akhilav.nutrilens.ui.screens.home.HomeScreen
 
 @Composable
 fun NutriLensNavGraph(
@@ -23,7 +24,13 @@ fun NutriLensNavGraph(
         modifier = modifier
     ) {
         composable(Screen.Home.route) {
-            DestinationPlaceholder("Home")
+            HomeScreen(
+                onScanClick = {
+                    navController.navigate(Screen.Scanner.route){
+                        launchSingleTop = true
+                    }
+                }
+            )
         }
 
         composable(Screen.Scanner.route) {
