@@ -19,6 +19,8 @@ interface ProductDao {
     @Query("SELECT * FROM products ORDER BY lastUpdated DESC")
     fun getAllProducts(): Flow<List<ProductEntity>>
 
+    @Query(""" SELECT * FROM products WHERE productName LIKE '%' || :query || '%' ORDER BY productName ASC""")
+    fun searchProducts(query:String): Flow<List<ProductEntity>>
     @Query("DELETE FROM products WHERE barcode = :barcode")
     suspend fun deleteProduct(barcode: String)
 

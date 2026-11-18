@@ -2,6 +2,7 @@ package com.akhilav.nutrilens.di
 
 import android.content.Context
 import androidx.room.Room
+import com.akhilav.nutrilens.data.local.dao.FoodConsumptionDao
 import com.akhilav.nutrilens.data.local.dao.ProductDao
 import com.akhilav.nutrilens.data.local.database.NutriLensDatabase
 import dagger.Module
@@ -15,14 +16,22 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
 
+    @Provides
+    @Singleton
     fun provideDatabase(@ApplicationContext context: Context): NutriLensDatabase{
         return Room.databaseBuilder(context,
-            NutriLensDatabase::class.java, "nutrilens_database").build()
+            NutriLensDatabase::class.java, "nutrilens_database")
+            .addMigrations(NutriLensDatabase.MIGRATION_1_2).build()
     }
+
 
     @Provides
     @Singleton
     fun provideProductDao(database: NutriLensDatabase): ProductDao {
         return database.productDao()
     }
+
+    @Provides
+    @Singleton
+    fun provideFoodConsumptionDao(database: NutriLensDatabase): FoodConsumptionDao = database.foodConsumptionDao()
 }

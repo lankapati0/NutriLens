@@ -44,6 +44,8 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
     // Hilt
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)

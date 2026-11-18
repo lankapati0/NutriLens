@@ -4,7 +4,9 @@ import com.akhilav.nutrilens.data.local.dao.ProductDao
 import com.akhilav.nutrilens.data.local.entity.ProductEntity
 import com.akhilav.nutrilens.data.remote.api.OpenFoodFactsApi
 import com.akhilav.nutrilens.data.remote.dto.ProductDto
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
+import kotlin.collections.emptyList
 
 class ProductRepository @Inject constructor(
     private val productDao: ProductDao,
@@ -56,4 +58,31 @@ class ProductRepository @Inject constructor(
         nutritionGrade = nutritionGrade,
         novaGroup = novaGroup
     )
+
+    fun searchProduct(query: String): Flow<List<ProductEntity>>{
+        return productDao.searchProducts(query)
+    }
+
+    suspend fun searchOnlineProducts(query:String): List<ProductEntity>{
+        return try {
+            val response = api.searchProducts(query)
+
+            if(response.isSuccessful){
+                val products = response.body()?.products.orEmpty()
+                val entities = products.mapNotNull { dto ->
+                    val barcode = dto.barcode?.takeIf { it.isNotBlank() } ?: return@mapNotNull null
+                    dto.toEntity(barcode)
+                }
+                entities.forEach { product ->
+                    productDao.insertProduct(product)
+                }
+                entities
+            } else {
+                emptyList()
+            }
+        } catch (e: Exception){
+            e.printStackTrace()
+            emptyList()
+        }
+    }
 }

@@ -11,7 +11,11 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.akhilav.nutrilens.ui.screens.FoodComparison.FoodComparisonScreen
+import com.akhilav.nutrilens.ui.screens.Intelligence.IngredientIntelligenceScreen
 import com.akhilav.nutrilens.ui.screens.home.HomeScreen
+import com.akhilav.nutrilens.ui.screens.scanner.ScannerScreen
+import com.akhilav.nutrilens.ui.screens.tracker.TrackerScreen
 
 @Composable
 fun NutriLensNavGraph(
@@ -34,11 +38,11 @@ fun NutriLensNavGraph(
         }
 
         composable(Screen.Scanner.route) {
-            DestinationPlaceholder("Food Scanner")
+            ScannerScreen()
         }
 
         composable(Screen.Tracker.route) {
-            DestinationPlaceholder("Nutrition Tracker")
+            TrackerScreen()
         }
 
         composable(Screen.Analytics.route) {
@@ -58,7 +62,7 @@ fun NutriLensNavGraph(
         }
 
         composable(Screen.Compare.route) {
-            DestinationPlaceholder("Compare Foods")
+            FoodComparisonScreen()
         }
 
         composable(Screen.Alternatives.route) {
@@ -66,7 +70,7 @@ fun NutriLensNavGraph(
         }
 
         composable(Screen.Ingredients.route) {
-            DestinationPlaceholder("Ingredient Intelligence")
+            IngredientIntelligenceScreen()
         }
 
         composable(Screen.MealPlanner.route) {

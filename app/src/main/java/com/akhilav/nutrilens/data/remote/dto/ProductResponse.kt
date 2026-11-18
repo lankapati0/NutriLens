@@ -56,3 +56,8 @@ data class ProductDto(
     @SerializedName("nova_group")
     val novaGroup: Int?
 )
+
+data class ProductSearchResponse(
+    @SerializedName("products")
+    val products:List<ProductDto>?
+)
