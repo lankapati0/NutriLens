@@ -1,5 +1,6 @@
 package com.akhilav.nutrilens.data.local.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -9,6 +10,9 @@ data class ProductEntity(
     val barcode: String,
     val productName: String?,
     val brands: String?,
+    val categories: String?,
+    @ColumnInfo(defaultValue = "0")
+    val isFavorite:Boolean = false,
     val imageUrl: String?,
 
     val energyKcal: Double?,

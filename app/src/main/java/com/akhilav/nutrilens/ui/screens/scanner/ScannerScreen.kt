@@ -32,6 +32,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.akhilav.nutrilens.ui.screens.nutrition.ProductNutritionScreen
 import com.akhilav.nutrilens.viewmodels.ScannerViewModel
+import com.akhilav.nutrilens.viewmodels.favorites.FavoritesViewModel
 
 @Composable
 fun ScannerScreen(
@@ -40,7 +41,7 @@ fun ScannerScreen(
 ){
     val context = LocalContext.current
     var scannerBarcode by remember { mutableStateOf<String?>(null) }
-
+    val favoritesViewModel: FavoritesViewModel = hiltViewModel()
     val product by viewModel.product.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val error by viewModel.error.collectAsStateWithLifecycle()
@@ -68,6 +69,9 @@ fun ScannerScreen(
             product = product!!,
             onSaveConsumption = {quantity ->
                 viewModel.saveConsumption(quantity)
+            },
+            onToggleFavorite = { barcode, isFavorite ->
+                favoritesViewModel.updateFavorite(barcode,isFavorite)
             }
         )
     } else if(hasCameraPermission){

@@ -27,4 +27,6 @@ interface FoodConsumptionDao {
     @Query("""SELECT * FROM food_consumption WHERE consumedAt >= :startTime AND consumedAt < :endTime ORDER BY consumedAt DESC""")
     fun getTodayConsumptions(startTime: Long,endTime: Long): Flow<List<FoodConsumptionEntity>>
 
+    @Query("""SELECT * FROM food_consumption WHERE consumedAt >= :startTime AND consumedAt < :endTime ORDER BY consumedAt ASC""")
+    fun getConsumptionsBetween(startTime: Long,endTime: Long): Flow<List<FoodConsumptionEntity>>
 }

@@ -40,7 +40,8 @@ data class ProductDto(
 
     @SerializedName("brands")
     val brands: String?,
-
+    @SerializedName("categories")
+    val categories: String?,
     @SerializedName("image_url")
     val imageUrl: String?,
 

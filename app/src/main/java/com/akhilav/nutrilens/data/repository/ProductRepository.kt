@@ -46,6 +46,7 @@ class ProductRepository @Inject constructor(
         barcode = barcode,
         productName = productName,
         brands = brands,
+        categories = categories,
         imageUrl = imageUrl,
         energyKcal = nutriments?.energyKcal,
         proteins = nutriments?.proteins,
@@ -61,6 +62,10 @@ class ProductRepository @Inject constructor(
 
     fun searchProduct(query: String): Flow<List<ProductEntity>>{
         return productDao.searchProducts(query)
+    }
+
+    fun getProductsByCategory(category:String, excludedBarcode:String): Flow<List<ProductEntity>>{
+        return productDao.getProductsbyCategory(category,excludedBarcode)
     }
 
     suspend fun searchOnlineProducts(query:String): List<ProductEntity>{
@@ -84,5 +89,13 @@ class ProductRepository @Inject constructor(
             e.printStackTrace()
             emptyList()
         }
+    }
+
+    suspend fun updateFavorite(barcode: String,isFavorite: Boolean){
+        productDao.updateFavorite(barcode,isFavorite)
+    }
+
+    fun getFavoriteProducts(): Flow<List<ProductEntity>>{
+        return productDao.getFavoriteProduct()
     }
 }

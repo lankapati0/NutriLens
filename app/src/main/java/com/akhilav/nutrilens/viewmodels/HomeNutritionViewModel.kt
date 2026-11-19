@@ -96,4 +96,18 @@ class HomeNutritionViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList())
 
+    val weeklyConsumption: StateFlow<List<FoodConsumptionEntity>> =
+        repository.getConsumptionsForLastDays(7).stateIn(
+            scope= viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    val montlyConsumption: StateFlow<List<FoodConsumptionEntity>> =
+        repository.getConsumptionsForLastDays(30).stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
 }

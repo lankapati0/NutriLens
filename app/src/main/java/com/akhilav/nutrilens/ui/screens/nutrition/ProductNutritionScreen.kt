@@ -38,7 +38,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun ProductNutritionScreen(
     product: ProductEntity,
-    onSaveConsumption: (Double)-> Unit
+    onSaveConsumption: (Double)-> Unit,
+    onToggleFavorite:(String, Boolean) -> Unit
 ){
     var quantityText by remember { mutableStateOf("") }
     val bringIntoViewRequester = remember {
@@ -64,6 +65,18 @@ fun ProductNutritionScreen(
             style = MaterialTheme.typography.bodyMedium
         )
         Spacer(Modifier.height(24.dp))
+        Button(
+            onClick = {
+                onToggleFavorite(product.barcode,true)
+            },
+            enabled = !product.isFavorite,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                if(product.isFavorite) "Already in Favorites"
+                else "Add to Favorites"
+            )
+        }
         Text(
             text = "Nutrition per 100 g",
             style = MaterialTheme.typography.titleLarge

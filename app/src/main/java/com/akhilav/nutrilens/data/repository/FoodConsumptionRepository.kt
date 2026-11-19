@@ -38,4 +38,16 @@ class FoodConsumptionRepository @Inject constructor(
 
         return foodConsumptionDao.getTodayConsumptions(startTime, endTime)
     }
+
+    fun getConsumptionsForLastDays(days:Long): Flow<List<FoodConsumptionEntity>> {
+        val zone = ZoneId.systemDefault()
+        val today = LocalDate.now(zone)
+
+        val startTime = today.minusDays(days - 1).atStartOfDay(zone).toInstant().toEpochMilli()
+
+        val endTime = today.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli()
+
+        return foodConsumptionDao.getTodayConsumptions(startTime,endTime)
+    }
+
 }

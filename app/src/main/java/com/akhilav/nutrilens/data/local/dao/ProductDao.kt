@@ -27,4 +27,12 @@ interface ProductDao {
     @Query("DELETE FROM products")
     suspend fun clearProducts()
 
+    @Query("""SELECT * FROM products WHERE barcode != :excludedBarcode AND categories IS NOT NULL AND categories LIKE '%' || :category || '%' ORDER BY productName ASC LIMIT 30""")
+    fun getProductsbyCategory(category:String, excludedBarcode:String):Flow<List<ProductEntity>>
+
+    @Query("UPDATE products SET isFavorite = :isFavorite WHERE barcode = :barcode")
+    suspend fun updateFavorite(barcode:String, isFavorite: Boolean)
+
+    @Query("SELECT * FROM products WHERE isFavorite = 1 ORDER BY lastUpdated DESC")
+    fun getFavoriteProduct(): Flow<List<ProductEntity>>
 }

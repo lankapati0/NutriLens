@@ -6,8 +6,10 @@ import android.widget.Toast
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.akhilav.nutrilens.data.local.dao.ScanHistoryDao
 import com.akhilav.nutrilens.data.local.entity.FoodConsumptionEntity
 import com.akhilav.nutrilens.data.local.entity.ProductEntity
+import com.akhilav.nutrilens.data.local.entity.ScanHistoryEntity
 import com.akhilav.nutrilens.data.repository.FoodConsumptionRepository
 import com.akhilav.nutrilens.data.repository.ProductRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +24,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ScannerViewModel @Inject constructor(
     private val productRepository: ProductRepository,
-    private val foodConsumptionRepository: FoodConsumptionRepository
+    private val foodConsumptionRepository: FoodConsumptionRepository,
+    private val scanHistoryDao: ScanHistoryDao
 ): ViewModel(){
     private val _product = MutableStateFlow<ProductEntity?>(null)
     val product: StateFlow<ProductEntity?> = _product
@@ -41,6 +44,14 @@ class ScannerViewModel @Inject constructor(
             val result = productRepository.getProduct(barcode)
             if(result != null){
                 _product.value = result
+                try {
+                    scanHistoryDao.insertScan(ScanHistoryEntity(
+                        barcode = result.barcode,
+                        productName = result.productName
+                    ))
+                }catch (e: Exception){
+                    e.printStackTrace()
+                }
             } else {
                 _error.value = "Product not found or unable to fetch product details."
             }
