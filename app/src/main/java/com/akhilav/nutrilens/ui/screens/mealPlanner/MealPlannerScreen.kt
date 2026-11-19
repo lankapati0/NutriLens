@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.DatePickerDefaults.dateFormatter
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -44,7 +45,9 @@ fun MealPlannerScreen(
 ){
 
     val meals by viewModel.meals.collectAsStateWithLifecycle()
+    val dateFormatter = remember { DateFormat.getDateInstance(DateFormat.SHORT, Locale.getDefault()) }
     var showAddMealDialog by remember { mutableStateOf(false) }
+
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Text(
             text = "Meal Planner",
@@ -64,34 +67,52 @@ fun MealPlannerScreen(
         } else {
             LazyColumn {
                 items(meals, key = { it.id }) { meal ->
+                    val displayDate = remember(meal.plannedDate) {
+                        try {
+                            val parsedDate = java.time.LocalDate.parse(meal.plannedDate)
+
+                            dateFormatter.format(
+                                java.util.Date.from(
+                                    parsedDate.atStartOfDay(
+                                        java.time.ZoneId.systemDefault()
+                                    ).toInstant()
+                                )
+                            )
+                        } catch (e: Exception) {
+                            meal.plannedDate
+                        }
+                    }
                     Card(modifier = Modifier.fillMaxWidth().padding(6.dp)) {
+
                         Row(
                             modifier = Modifier.fillMaxWidth().padding(16.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Column {
-                                Text(meal.mealName)
-                                Text("${meal.mealType} • ${meal.plannedDate}")
-                            }
-                            IconButton(onClick = { viewModel.deleteMeal(meal) }) {
-                                Icon(
-                                    imageVector = Icons.Default.Delete,
-                                    contentDescription = "Delete meal"
-                                )
+                            Column(modifier = Modifier.weight(1f)) {
+                                    Text(meal.mealName)
+                                  Row(modifier = Modifier.fillMaxWidth(),
+                                      verticalAlignment = Alignment.CenterVertically){
+                                      Text("${meal.mealType} • $displayDate", modifier = Modifier.weight(1f))
+                                      IconButton(onClick = { viewModel.deleteMeal(meal) }) {
+                                          Icon(
+                                              imageVector = Icons.Default.Delete,
+                                              contentDescription = "Delete meal"
+                                          )
+                                      }
+                                  }
+                                }
+
                             }
                         }
                     }
                 }
             }
         }
-    }
+
 
     if(showAddMealDialog){
         var mealName by remember { mutableStateOf("") }
         var mealType by remember { mutableStateOf("Breakfast") }
-        val dateFormatter = remember {DateFormat.getDateInstance(
-            DateFormat.SHORT, Locale.getDefault()
-        )}
         var plannedDate by remember {
             mutableStateOf(dateFormatter.format(Date()))
         }
@@ -142,12 +163,20 @@ fun MealPlannerScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        if (mealName.isNotBlank() && dateFormatter.toString().isNotBlank()) {
-                            viewModel.addMeal(
-                                mealName.trim(),
-                                mealType,
-                                dateFormatter.toString().trim()
-                            )
+                        if (mealName.isNotBlank() && plannedDate.isNotBlank()) {
+                            val parsedDate = dateFormatter.parse(plannedDate)
+                            if (parsedDate != null) {
+                                val storedDate = java.text.SimpleDateFormat(
+                                    "yyyy-MM-dd",
+                                    java.util.Locale.US
+                                ).format(parsedDate)
+
+                                viewModel.addMeal(
+                                    mealName.trim(),
+                                    mealType,
+                                    storedDate
+                                )
+                            }
                             showAddMealDialog = false
                         }
                     }

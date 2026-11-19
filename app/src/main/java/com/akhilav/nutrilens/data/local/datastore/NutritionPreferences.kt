@@ -3,6 +3,7 @@ package com.akhilav.nutrilens.data.local.datastore
 import android.content.Context
 import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
@@ -22,6 +23,7 @@ class NutritionPreferences @Inject constructor(
         val DAILY_PROTEIN_TARGET = doublePreferencesKey("daily_protein_target")
         val DAILY_CARBS_TARGET = doublePreferencesKey("daily_carbs_target")
         val DAILY_FAT_TARGET = doublePreferencesKey("daily_fat_target")
+        val DAILY_WATER_TARGET = intPreferencesKey("daily_water_target")
     }
 
     val dailyCalorieTarget: Flow<Double> = context.nutritionDataStore.data.map { preferences ->
@@ -34,12 +36,17 @@ class NutritionPreferences @Inject constructor(
     val dailyCarbsTarget: Flow<Double> =
         context.nutritionDataStore.data.map { preferences ->
             preferences[DAILY_CARBS_TARGET] ?: 275.0
-        }
+    }
 
     val dailyFatTarget: Flow<Double> =
         context.nutritionDataStore.data.map { preferences ->
             preferences[DAILY_FAT_TARGET] ?: 78.0
-        }
+    }
+
+    val dailyWaterTarget:Flow<Int> =
+        context.nutritionDataStore.data.map { preferences ->
+            preferences[DAILY_WATER_TARGET] ?: 2000
+    }
 
     suspend fun saveDailyCalorieTarget(target: Double){
         context.nutritionDataStore.edit { preferences ->
@@ -61,6 +68,12 @@ class NutritionPreferences @Inject constructor(
     suspend fun saveDailyFatTarget(target: Double) {
         context.nutritionDataStore.edit { preferences ->
             preferences[DAILY_FAT_TARGET] = target
+        }
+    }
+
+    suspend fun saveDailyWaterTarget(target:Int){
+        context.nutritionDataStore.edit { preferences ->
+            preferences[DAILY_WATER_TARGET] = target
         }
     }
 }

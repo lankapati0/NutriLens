@@ -20,6 +20,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.NutriLens">
+        <provider
+            android:authorities="${applicationId}.provider"
+            android:name="androidx.core.content.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data android:resource="@xml/file_paths"
+                android:name="android.support.FILE_PROVIDER_PATHS"/>
+        </provider>
         <activity
             android:name=".MainActivity"
             android:exported="true"

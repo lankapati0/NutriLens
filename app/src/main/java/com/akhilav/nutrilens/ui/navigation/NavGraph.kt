@@ -18,9 +18,11 @@ import com.akhilav.nutrilens.ui.screens.favorite.FavoritesScreen
 import com.akhilav.nutrilens.ui.screens.history.ScanHistoryScreen
 import com.akhilav.nutrilens.ui.screens.home.HomeScreen
 import com.akhilav.nutrilens.ui.screens.mealPlanner.MealPlannerScreen
+import com.akhilav.nutrilens.ui.screens.reports.ReportsScreen
 import com.akhilav.nutrilens.ui.screens.scanner.ScannerScreen
 import com.akhilav.nutrilens.ui.screens.stats.StatsScreen
 import com.akhilav.nutrilens.ui.screens.tracker.TrackerScreen
+import com.akhilav.nutrilens.ui.screens.waterTracker.WaterTrackerScreen
 
 @Composable
 fun NutriLensNavGraph(
@@ -83,11 +85,11 @@ fun NutriLensNavGraph(
         }
 
         composable(Screen.WaterTracker.route) {
-            DestinationPlaceholder("Water Tracker")
+            WaterTrackerScreen()
         }
 
         composable(Screen.Reports.route) {
-            DestinationPlaceholder("Reports & Export")
+            ReportsScreen()
         }
 
         composable(Screen.Settings.route) {
