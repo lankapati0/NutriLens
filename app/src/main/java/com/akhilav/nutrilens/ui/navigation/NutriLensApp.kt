@@ -5,10 +5,15 @@ import androidx.navigation.compose.rememberNavController
 import com.akhilav.nutriscan.ui.navigation.NutriLensScaffold
 
 @Composable
-fun NutriLensApp(){
+fun NutriLensApp(
+    onThemeChange:(String)-> Unit,
+    selectedTheme:String
+){
     val navController = rememberNavController()
 
     NutriLensScaffold(
-        navController = navController
+        navController = navController,
+        onThemeChange = onThemeChange,
+        selectedTheme = selectedTheme
     )
 }

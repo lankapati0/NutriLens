@@ -34,6 +34,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NutriLensScaffold(
+    onThemeChange:(String)-> Unit,selectedTheme:String,
     navController: NavHostController
 ) {
     val drawerState = rememberDrawerState(
@@ -126,7 +127,8 @@ fun NutriLensScaffold(
             }
         ) { innerPadding ->
             NutriLensNavGraph(
-                navController = navController,
+                onThemeChange = onThemeChange,
+                navController = navController, selectedTheme = selectedTheme,
                 modifier = Modifier.padding(innerPadding)
             )
         }

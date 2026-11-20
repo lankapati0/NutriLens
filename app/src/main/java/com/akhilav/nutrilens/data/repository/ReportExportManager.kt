@@ -128,7 +128,6 @@ class ReportExportManager @Inject constructor(
             }
         }
         file.writeText(csvContent, Charsets.UTF_8)
-        android.util.Log.v("CSV_EXPORT", csvContent)
         return file
     }
 

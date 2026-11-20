@@ -1,6 +1,7 @@
 package com.akhilav.nutrilens.data.local.datastore
 
 import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
@@ -24,6 +25,15 @@ class NutritionPreferences @Inject constructor(
         val DAILY_CARBS_TARGET = doublePreferencesKey("daily_carbs_target")
         val DAILY_FAT_TARGET = doublePreferencesKey("daily_fat_target")
         val DAILY_WATER_TARGET = intPreferencesKey("daily_water_target")
+        val MEAL_REMINDERS_ENABLED = booleanPreferencesKey("meal_reminders_enabled")
+        val MEAL_REMINDER_HOUR = intPreferencesKey("meal_reminder_hour")
+        val MEAL_REMINDER_MINUTE = intPreferencesKey("meal_reminder_minute")
+        val WATER_REMINDERS_ENABLED = booleanPreferencesKey("water_reminders_enabled")
+
+        val WATER_REMINDER_HOUR = intPreferencesKey("water_reminder_hour")
+
+        val WATER_REMINDER_MINUTE = intPreferencesKey("water_reminder_minute")
+        val NOTIFICATIONS_ENABLED = booleanPreferencesKey("notifications_enabled")
     }
 
     val dailyCalorieTarget: Flow<Double> = context.nutritionDataStore.data.map { preferences ->
@@ -46,6 +56,41 @@ class NutritionPreferences @Inject constructor(
     val dailyWaterTarget:Flow<Int> =
         context.nutritionDataStore.data.map { preferences ->
             preferences[DAILY_WATER_TARGET] ?: 2000
+    }
+
+    val waterRemindersEnabled:Flow<Boolean> =
+        context.nutritionDataStore.data.map { preferences ->
+            preferences[WATER_REMINDERS_ENABLED] ?: false
+    }
+
+    val waterReminderHour: Flow<Int> =
+        context.nutritionDataStore.data.map { preferences ->
+            preferences[WATER_REMINDER_HOUR] ?: 10
+    }
+
+    val waterReminderMinute: Flow<Int> =
+        context.nutritionDataStore.data.map { preferences ->
+            preferences[WATER_REMINDER_MINUTE] ?: 0
+    }
+
+    val mealRemindersEnabled: Flow<Boolean> =
+        context.nutritionDataStore.data.map { preferences ->
+            preferences[MEAL_REMINDERS_ENABLED] ?: false
+    }
+
+    val mealReminderHour: Flow<Int> =
+        context.nutritionDataStore.data.map { preferences ->
+            preferences[MEAL_REMINDER_HOUR] ?: 13
+    }
+
+    val mealReminderMinute: Flow<Int> =
+        context.nutritionDataStore.data.map { preferences ->
+            preferences[MEAL_REMINDER_MINUTE] ?: 0
+    }
+
+    val notificationsEnabled: Flow<Boolean> =
+        context.nutritionDataStore.data.map { preferences ->
+            preferences[NOTIFICATIONS_ENABLED] ?: true
     }
 
     suspend fun saveDailyCalorieTarget(target: Double){
@@ -76,4 +121,37 @@ class NutritionPreferences @Inject constructor(
             preferences[DAILY_WATER_TARGET] = target
         }
     }
+
+    suspend fun saveMealRemindersEnabled(enabled:Boolean){
+        context.nutritionDataStore.edit { preference ->
+            preference[MEAL_REMINDERS_ENABLED] = enabled
+        }
+    }
+
+    suspend fun saveMealReminderTime(hour: Int, minute: Int) {
+        context.nutritionDataStore.edit { preferences ->
+            preferences[MEAL_REMINDER_HOUR] = hour
+            preferences[MEAL_REMINDER_MINUTE] = minute
+        }
+    }
+
+    suspend fun saveWaterRemindersEnabled(enabled: Boolean) {
+        context.nutritionDataStore.edit { preferences ->
+            preferences[WATER_REMINDERS_ENABLED] = enabled
+        }
+    }
+
+    suspend fun saveWaterReminderTime(hour: Int, minute: Int) {
+        context.nutritionDataStore.edit { preferences ->
+            preferences[WATER_REMINDER_HOUR] = hour
+            preferences[WATER_REMINDER_MINUTE] = minute
+        }
+    }
+
+    suspend fun saveNotificationEnabled(enabled: Boolean){
+        context.nutritionDataStore.edit { preferences ->
+            preferences[NOTIFICATIONS_ENABLED] = enabled
+        }
+    }
+
 }

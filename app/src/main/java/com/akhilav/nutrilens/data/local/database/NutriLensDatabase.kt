@@ -8,17 +8,19 @@ import com.akhilav.nutrilens.data.local.dao.FoodConsumptionDao
 import com.akhilav.nutrilens.data.local.dao.MealPlanDao
 import com.akhilav.nutrilens.data.local.dao.ProductDao
 import com.akhilav.nutrilens.data.local.dao.ScanHistoryDao
+import com.akhilav.nutrilens.data.local.dao.UserProfileDao
 import com.akhilav.nutrilens.data.local.dao.WaterIntakeDao
 import com.akhilav.nutrilens.data.local.entity.FoodConsumptionEntity
 import com.akhilav.nutrilens.data.local.entity.MealPlanEntity
 import com.akhilav.nutrilens.data.local.entity.ProductEntity
 import com.akhilav.nutrilens.data.local.entity.ScanHistoryEntity
+import com.akhilav.nutrilens.data.local.entity.UserProfileEntity
 import com.akhilav.nutrilens.data.local.entity.WaterIntakeEntity
 
 @Database(
     entities = [ProductEntity::class, FoodConsumptionEntity::class, ScanHistoryEntity::class, MealPlanEntity::class,
-        WaterIntakeEntity::class],
-    version = 8,
+        WaterIntakeEntity::class, UserProfileEntity::class],
+    version = 9,
     exportSchema = false
 )
 abstract class NutriLensDatabase : RoomDatabase(){
@@ -27,6 +29,7 @@ abstract class NutriLensDatabase : RoomDatabase(){
     abstract fun scanHistoryDao(): ScanHistoryDao
     abstract fun mealPlanDao(): MealPlanDao
     abstract fun walterIntakeDao(): WaterIntakeDao
+    abstract fun userProfileDao(): UserProfileDao
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
@@ -130,6 +133,25 @@ abstract class NutriLensDatabase : RoomDatabase(){
                 )
             }
         }
+
+        val MIGRATION_8_9 = object : Migration(8, 9) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+            CREATE TABLE IF NOT EXISTS user_profile (
+                id INTEGER NOT NULL PRIMARY KEY,
+                displayName TEXT NOT NULL,
+                dateOfBirth TEXT,
+                heightCm REAL,
+                weightKg REAL,
+                profileImageUrl TEXT,
+                measurementSystem TEXT NOT NULL
+            )
+            """.trimIndent()
+                )
+            }
+        }
+
 
     }
 }

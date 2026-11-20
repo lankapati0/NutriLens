@@ -12,5 +12,4 @@ val drawerItems = listOf(
     DrawerNavItem("Water Tracker", Screen.WaterTracker.route),
     DrawerNavItem("Reports & Export", Screen.Reports.route),
     DrawerNavItem("Settings", Screen.Settings.route),
-    DrawerNavItem("About NutriLens", Screen.About.route)
 )

@@ -18,8 +18,10 @@ import com.akhilav.nutrilens.ui.screens.favorite.FavoritesScreen
 import com.akhilav.nutrilens.ui.screens.history.ScanHistoryScreen
 import com.akhilav.nutrilens.ui.screens.home.HomeScreen
 import com.akhilav.nutrilens.ui.screens.mealPlanner.MealPlannerScreen
+import com.akhilav.nutrilens.ui.screens.profile.ProfileScreen
 import com.akhilav.nutrilens.ui.screens.reports.ReportsScreen
 import com.akhilav.nutrilens.ui.screens.scanner.ScannerScreen
+import com.akhilav.nutrilens.ui.screens.settings.SettingsScreen
 import com.akhilav.nutrilens.ui.screens.stats.StatsScreen
 import com.akhilav.nutrilens.ui.screens.tracker.TrackerScreen
 import com.akhilav.nutrilens.ui.screens.waterTracker.WaterTrackerScreen
@@ -27,6 +29,7 @@ import com.akhilav.nutrilens.ui.screens.waterTracker.WaterTrackerScreen
 @Composable
 fun NutriLensNavGraph(
     navController: NavHostController,
+    onThemeChange:(String)-> Unit,selectedTheme: String,
     modifier: Modifier = Modifier
 ) {
     NavHost(
@@ -57,7 +60,7 @@ fun NutriLensNavGraph(
         }
 
         composable(Screen.Profile.route) {
-            DestinationPlaceholder("Profile")
+            ProfileScreen()
         }
 
         composable(Screen.Favorites.route) {
@@ -93,12 +96,9 @@ fun NutriLensNavGraph(
         }
 
         composable(Screen.Settings.route) {
-            DestinationPlaceholder("Settings")
+            SettingsScreen(onThemeChange = onThemeChange, selectedTheme = selectedTheme)
         }
 
-        composable(Screen.About.route) {
-            DestinationPlaceholder("About NutriLens")
-        }
     }
 }
 
