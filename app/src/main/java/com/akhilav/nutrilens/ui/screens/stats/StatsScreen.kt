@@ -1,5 +1,6 @@
 package com.akhilav.nutrilens.ui.screens.stats
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,6 +27,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.akhilav.nutrilens.ui.theme.BrandDeepTeal
+import com.akhilav.nutrilens.ui.theme.BrandMint
+import com.akhilav.nutrilens.ui.theme.BrandOceanTeal
+import com.akhilav.nutrilens.ui.theme.component.GlassCard
 import com.akhilav.nutrilens.viewmodels.HomeNutritionViewModel
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChart
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
@@ -47,8 +52,7 @@ import java.util.Locale
 @Composable
 fun StatsScreen(
     viewModel: HomeNutritionViewModel = hiltViewModel()
-){
-
+) {
     val summary by viewModel.todaysConsumption.collectAsStateWithLifecycle()
     val calorieTarget by viewModel.dailyCaloriesTarget.collectAsStateWithLifecycle()
     val proteinTarget by viewModel.dailyProteinTarget.collectAsStateWithLifecycle()
@@ -58,36 +62,39 @@ fun StatsScreen(
     val weeklyConsumption by viewModel.weeklyConsumption.collectAsStateWithLifecycle()
     val monthlyConsumption by viewModel.montlyConsumption.collectAsStateWithLifecycle()
 
-    val totalCalories = if(summary.isEmpty()) 0.0
-    else if(summary.any{it.calories == null}) null
+    val totalCalories = if (summary.isEmpty()) 0.0
+    else if (summary.any { it.calories == null }) null
     else summary.sumOf { it.calories!! }
 
-    val totalProtein = if(summary.isEmpty()) 0.0
-        else if(summary.any { it.protein == null }) null
-        else summary.sumOf { it.protein!! }
+    val totalProtein = if (summary.isEmpty()) 0.0
+    else if (summary.any { it.protein == null }) null
+    else summary.sumOf { it.protein!! }
 
-    val totalCarbs = if(summary.isEmpty()) 0.0
-        else if(summary.any { it.carbohydrates ==null }) null
-        else summary.sumOf { it.carbohydrates!!}
+    val totalCarbs = if (summary.isEmpty()) 0.0
+    else if (summary.any { it.carbohydrates == null }) null
+    else summary.sumOf { it.carbohydrates!! }
 
-
-    val totalFat = if(summary.isEmpty()) 0.0
-        else if(summary.any { it.fat == null }) null
-        else summary.sumOf { it.fat!!}
+    val totalFat = if (summary.isEmpty()) 0.0
+    else if (summary.any { it.fat == null }) null
+    else summary.sumOf { it.fat!! }
 
     val zone = ZoneId.systemDefault()
     val today = LocalDate.now(zone)
 
-    val weeklyCalories = (6 downTo  0).map{ dayAgo ->
+    val weeklyCalories = (6 downTo 0).map { dayAgo ->
         val date = today.minusDays(dayAgo.toLong())
+
         val dayRecords = weeklyConsumption.filter {
-            Instant.ofEpochMilli(it.consumedAt).atZone(zone).toLocalDate() == date
+            Instant.ofEpochMilli(it.consumedAt)
+                .atZone(zone).toLocalDate() == date
         }
+
         val calories = when {
             dayRecords.isEmpty() -> 0.0
             dayRecords.any { it.calories == null } -> null
             else -> dayRecords.sumOf { it.calories!! }
         }
+
         date to calories
     }
 
@@ -95,33 +102,42 @@ fun StatsScreen(
         val date = today.minusDays(daysAgo.toLong())
 
         val dayRecords = monthlyConsumption.filter {
-            Instant.ofEpochMilli(it.consumedAt).atZone(zone).toLocalDate() == date
+            Instant.ofEpochMilli(it.consumedAt)
+                .atZone(zone).toLocalDate() == date
         }
+
         val calories = when {
             dayRecords.isEmpty() -> 0.0
-            dayRecords.any {it.calories == null} -> null
+            dayRecords.any { it.calories == null } -> null
             else -> dayRecords.sumOf { it.calories!! }
         }
+
         date to calories
     }
 
     val validMonthlyCalories = monthlyCalories.mapNotNull { it.second }
-    val monthlyAverage = if(monthlyCalories.isNotEmpty()){
+
+    val monthlyAverage = if (monthlyCalories.isNotEmpty()) {
         validMonthlyCalories.average()
-    } else {null}
-    val monthlyTotal = if(monthlyCalories.any { it.second == null }){
+    } else {
+        null
+    }
+
+    val monthlyTotal = if (monthlyCalories.any { it.second == null }) {
         null
     } else {
         monthlyCalories.sumOf { it.second ?: 0.0 }
     }
 
     val validWeeklyCalories = weeklyCalories.mapNotNull { it.second }
-    val weeklyAverage = if(weeklyCalories.isNotEmpty()){
+
+    val weeklyAverage = if (weeklyCalories.isNotEmpty()) {
         validWeeklyCalories.average()
-    }else{
+    } else {
         null
     }
-    val weeklyTotal = if(weeklyCalories.any { it.second == null }){
+
+    val weeklyTotal = if (weeklyCalories.any { it.second == null }) {
         null
     } else {
         weeklyCalories.sumOf { it.second ?: 0.0 }
@@ -129,48 +145,73 @@ fun StatsScreen(
 
     val calorieGradient = Brush.verticalGradient(
         colors = listOf(
-            Color(0xFF64B5F6),
-            Color(0xFF1565C0)
+            BrandMint,
+            BrandDeepTeal
         )
     )
 
     val macroGradient = Brush.verticalGradient(
         colors = listOf(
-            Color(0xFF81C784),
-            Color(0xFF2E7D32)
+            BrandOceanTeal,
+            BrandDeepTeal
         )
     )
 
-    val chartModelProducer = remember { CartesianChartModelProducer() }
-    val monthlyChartModelProducer = remember { CartesianChartModelProducer() }
-    val macroChartModelProducer = remember { CartesianChartModelProducer() }
-
-    val chartEntries = weeklyCalories.mapNotNull { (date,calories) ->
-        date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()) to calories
+    val chartModelProducer = remember {
+        CartesianChartModelProducer()
     }
 
-    val monthlyChartEntries = monthlyCalories.mapNotNull { (date,calories) ->
+    val monthlyChartModelProducer = remember {
+        CartesianChartModelProducer()
+    }
+
+    val macroChartModelProducer = remember {
+        CartesianChartModelProducer()
+    }
+
+    val chartEntries = weeklyCalories.mapNotNull { (date, calories) ->
+        date.dayOfWeek.getDisplayName(
+            TextStyle.SHORT,
+            Locale.getDefault()
+        ) to calories
+    }
+
+    val monthlyChartEntries = monthlyCalories.mapNotNull { (date, calories) ->
         date.dayOfMonth.toString() to calories
     }
-    val monthlyChartLabels = monthlyChartEntries.mapNotNull { (label,calories) ->
+
+    val monthlyChartLabels = monthlyChartEntries.mapNotNull { (label, calories) ->
         label.takeIf { calories != null }
     }
-    val monthlyChartValues = monthlyChartEntries.mapNotNull { it.second }
 
-    val chartValues = chartEntries.mapNotNull { it.second }
+    val monthlyChartValues = monthlyChartEntries.mapNotNull {
+        it.second
+    }
 
-    val macroChartValues = if(totalProtein != null && totalCarbs != null && totalFat != null){
-        listOf(totalProtein *4,totalCarbs*4,totalFat*9)
+    val chartValues = chartEntries.mapNotNull {
+        it.second
+    }
+
+    val macroChartValues = if (
+        totalProtein != null &&
+        totalCarbs != null &&
+        totalFat != null
+    ) {
+        listOf(
+            totalProtein * 4,
+            totalCarbs * 4,
+            totalFat * 9
+        )
     } else {
         emptyList()
     }
 
-    val chartLabels = chartEntries.mapNotNull { (label,calories) ->
+    val chartLabels = chartEntries.mapNotNull { (label, calories) ->
         label.takeIf { calories != null }
     }
 
     LaunchedEffect(chartValues) {
-        if(chartValues.isNotEmpty()){
+        if (chartValues.isNotEmpty()) {
             chartModelProducer.runTransaction {
                 columnModel {
                     series(chartValues)
@@ -180,7 +221,7 @@ fun StatsScreen(
     }
 
     LaunchedEffect(macroChartValues) {
-        if(macroChartValues.isNotEmpty()){
+        if (macroChartValues.isNotEmpty()) {
             macroChartModelProducer.runTransaction {
                 columnModel {
                     series(macroChartValues)
@@ -190,7 +231,7 @@ fun StatsScreen(
     }
 
     LaunchedEffect(monthlyChartValues) {
-        if(monthlyChartValues.isNotEmpty()){
+        if (monthlyChartValues.isNotEmpty()) {
             monthlyChartModelProducer.runTransaction {
                 columnModel {
                     series(monthlyChartValues)
@@ -199,48 +240,73 @@ fun StatsScreen(
         }
     }
 
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(16.dp)
-        .verticalScroll(rememberScrollState())) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
+
         Text(
             text = "Nutrition Analytics",
-            style = MaterialTheme.typography.headlineMedium
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.onBackground
         )
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Text("Today's Nutrition", style = MaterialTheme.typography.titleLarge)
+        // Today's Nutrition
+
+        Text(
+            "Today's Nutrition",
+            style = MaterialTheme.typography.titleLarge
+        )
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
-        ){
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text("Calories: ${totalCalories?.let { "$it kcal"} ?: "Not available"}")
-                Text("Protein: ${totalProtein?.let { "$it g"} ?: "Not available"}")
-                Text("Carbohydrates: ${totalCarbs?.let { "$it g"} ?: "Not available"}")
-                Text("Fat: ${totalFat?.let { "$it g"} ?: "Not available"}")
+        GlassCard(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = "Calories: ${totalCalories?.let { "${it.toInt()} kcal" } ?: "Not available"}",
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                Text(
+                    text = "Protein: ${totalProtein?.let { "${it.toInt()} g" } ?: "Not available"}",
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                Text(
+                    text = "Carbohydrates: ${totalCarbs?.let { "${it.toInt()} g" } ?: "Not available"}",
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                Text(
+                    text = "Fat: ${totalFat?.let { "${it.toInt()} g" } ?: "Not available"}",
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             }
         }
+
         Spacer(Modifier.height(24.dp))
 
-        Text("Last 7 Days",style = MaterialTheme.typography.titleLarge)
-        Spacer(Modifier.height(16.dp))
-/*        weeklyCalories.forEach { (date, calories) ->
-            Text(
-                text = "${date.dayOfMonth}/${date.monthValue}: ${
-                    calories?.let { "${it.toInt()} kcal" } ?: "Not available"
-                }"
-            )
-        }*/
+        // Last 7 Days
 
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
-        ){
+        Text(
+            "Last 7 Days",
+            style = MaterialTheme.typography.titleLarge
+        )
+
+        Spacer(Modifier.height(16.dp))
+
+        GlassCard(
+            modifier = Modifier.fillMaxWidth()
+        ) {
             CartesianChartHost(
                 chart = rememberCartesianChart(
                     rememberColumnCartesianLayer(
@@ -248,43 +314,63 @@ fun StatsScreen(
                             rememberLineComponent(
                                 fill = Fill(calorieGradient),
                                 thickness = 18.dp,
-                                shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
+                                shape = RoundedCornerShape(
+                                    topStart = 8.dp,
+                                    topEnd = 8.dp
+                                )
                             )
                         )
                     ),
                     startAxis = VerticalAxis.rememberStart(),
                     bottomAxis = HorizontalAxis.rememberBottom(
                         valueFormatter = { _, x, _ ->
-                            chartLabels.getOrNull(x.toInt()) ?: x.toInt().toString()
+                            chartLabels.getOrNull(x.toInt())
+                                ?: x.toInt().toString()
                         },
-                        itemPlacer = remember { HorizontalAxis.ItemPlacer.aligned(spacing = {1}) }
+                        itemPlacer = remember {
+                            HorizontalAxis.ItemPlacer.aligned(
+                                spacing = { 1 }
+                            )
+                        }
                     )
                 ),
                 modelProducer = chartModelProducer,
                 modifier = Modifier
-                    .fillMaxWidth().padding(16.dp)
+                    .fillMaxWidth()
+                    .padding(16.dp)
                     .height(260.dp)
             )
         }
+
         Spacer(Modifier.height(12.dp))
+
         Text(
             text = "Daily average: ${
-                weeklyAverage?.let { "${it.toInt()} kcal" } ?: "Not available"
+                weeklyAverage?.let { "${it.toInt()} kcal" }
+                    ?: "Not available"
             }",
             style = MaterialTheme.typography.bodyLarge
         )
+
         Text(
             text = "Weekly total: ${
-                weeklyTotal?.let { "${it.toInt()} kcal" } ?: "Not available"
+                weeklyTotal?.let { "${it.toInt()} kcal" }
+                    ?: "Not available"
             }",
             style = MaterialTheme.typography.bodyLarge
         )
 
         Spacer(Modifier.height(24.dp))
 
-        Text(text="Last 30 Days",    style = MaterialTheme.typography.titleLarge)
+        // Last 30 Days
+
+        Text(
+            "Last 30 Days",
+            style = MaterialTheme.typography.titleLarge
+        )
 
         Spacer(Modifier.height(12.dp))
+
         Text(
             "Daily calorie intake over the past 30 days",
             style = MaterialTheme.typography.bodySmall,
@@ -292,53 +378,66 @@ fun StatsScreen(
         )
 
         Spacer(Modifier.height(8.dp))
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 3.dp
-            )
-        ){
+
+        GlassCard(
+            modifier = Modifier.fillMaxWidth()
+        ) {
             CartesianChartHost(
                 chart = rememberCartesianChart(
                     rememberColumnCartesianLayer(
-                        ColumnCartesianLayer.ColumnProvider.series(rememberLineComponent(
-                            fill = Fill(calorieGradient),
-                            thickness = 8.dp,
-                            shape = RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp)
-                        ))
+                        ColumnCartesianLayer.ColumnProvider.series(
+                            rememberLineComponent(
+                                fill = Fill(calorieGradient),
+                                thickness = 8.dp,
+                                shape = RoundedCornerShape(
+                                    topStart = 6.dp,
+                                    topEnd = 6.dp
+                                )
+                            )
+                        )
                     ),
                     startAxis = VerticalAxis.rememberStart(),
                     bottomAxis = HorizontalAxis.rememberBottom(
-                        valueFormatter = {_ , x, _ ->
-                            monthlyChartLabels.getOrNull(x.toInt()) ?: x.toInt().toString()
+                        valueFormatter = { _, x, _ ->
+                            monthlyChartLabels.getOrNull(x.toInt())
+                                ?: x.toInt().toString()
                         },
                         itemPlacer = remember {
-                            HorizontalAxis.ItemPlacer.aligned(spacing = {5})
+                            HorizontalAxis.ItemPlacer.aligned(
+                                spacing = { 5 }
+                            )
                         }
                     )
                 ),
-                modelProducer =monthlyChartModelProducer,
+                modelProducer = monthlyChartModelProducer,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
                     .height(260.dp)
             )
         }
+
         Spacer(Modifier.height(12.dp))
+
         Text(
             text = "Daily average: ${
-                monthlyAverage?.let { "${it.toInt()} kcal" } ?: "Not available"
+                monthlyAverage?.let { "${it.toInt()} kcal" }
+                    ?: "Not available"
             }",
             style = MaterialTheme.typography.bodyLarge
         )
 
         Text(
-            text="30-day total: ${
-                monthlyTotal?.let { "${it.toInt()} kcal" } ?: "Not available"
+            text = "30-day total: ${
+                monthlyTotal?.let { "${it.toInt()} kcal" }
+                    ?: "Not available"
             }",
             style = MaterialTheme.typography.bodyLarge
         )
 
+        Spacer(Modifier.height(24.dp))
+
+        // Calories by Macronutrients
 
         Text(
             "Calories by Macronutrients",
@@ -346,16 +445,19 @@ fun StatsScreen(
         )
 
         Spacer(Modifier.height(12.dp))
-        Text(    "Estimated energy contribution (kcal)",
+
+        Text(
+            "Estimated energy contribution (kcal)",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+
         Spacer(Modifier.height(8.dp))
 
-        if(macroChartValues.isNotEmpty()){
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
+        if (macroChartValues.isNotEmpty()) {
+
+            GlassCard(
+                modifier = Modifier.fillMaxWidth()
             ) {
                 CartesianChartHost(
                     chart = rememberCartesianChart(
@@ -369,27 +471,43 @@ fun StatsScreen(
                                         topEnd = 8.dp
                                     )
                                 )
-                            ),
+                            )
                         ),
                         startAxis = VerticalAxis.rememberStart(),
                         bottomAxis = HorizontalAxis.rememberBottom(
                             valueFormatter = { _, x, _ ->
-                                listOf("Protein", "Carbs", "Fat").getOrNull(x.toInt()) ?: x.toInt().toString()
+                                listOf(
+                                    "Protein",
+                                    "Carbs",
+                                    "Fat"
+                                ).getOrNull(x.toInt())
+                                    ?: x.toInt().toString()
                             },
-                            itemPlacer = remember { HorizontalAxis.ItemPlacer.aligned(spacing = { 1 }) }
+                            itemPlacer = remember {
+                                HorizontalAxis.ItemPlacer.aligned(
+                                    spacing = { 1 }
+                                )
+                            }
                         )
                     ),
                     modelProducer = macroChartModelProducer,
                     modifier = Modifier
-                        .fillMaxWidth().padding(16.dp)
+                        .fillMaxWidth()
+                        .padding(16.dp)
                         .height(240.dp)
                 )
             }
+
         } else {
-            Text("Macro data is not available for all today's meals.")
+            Text(
+                "Macro data is not available for all today's meals.",
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
 
         Spacer(Modifier.height(24.dp))
+
+        // Daily Goal Progress
 
         Text(
             "Daily Goal Progress",
@@ -397,59 +515,92 @@ fun StatsScreen(
         )
 
         Spacer(Modifier.height(12.dp))
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 3.dp
-            )
-        ){
+
+        GlassCard(
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Column(
                 modifier = Modifier.padding(16.dp)
-            ){
-                NutritionGoalItem("Calories",
-                    totalCalories,calorieTarget,"kcal")
-                NutritionGoalItem("Protein",
-                    totalProtein,proteinTarget,"g")
-                NutritionGoalItem("Carbohydrates",
-                    totalCalories,carbsTarget,"g")
-                NutritionGoalItem("Fat",
-                    totalFat,fatTarget,"g")
+            ) {
+
+                NutritionGoalItem(
+                    "Calories",
+                    totalCalories,
+                    calorieTarget,
+                    "kcal"
+                )
+
+                NutritionGoalItem(
+                    "Protein",
+                    totalProtein,
+                    proteinTarget,
+                    "g"
+                )
+
+                NutritionGoalItem(
+                    "Carbohydrates",
+                    totalCarbs,
+                    carbsTarget,
+                    "g"
+                )
+
+                NutritionGoalItem(
+                    "Fat",
+                    totalFat,
+                    fatTarget,
+                    "g"
+                )
             }
         }
-
     }
 }
 
 @Composable
-fun NutritionGoalItem(label: String, consumed: Double?, target: Double,unit: String){
+fun NutritionGoalItem(
+    label: String,
+    consumed: Double?,
+    target: Double,
+    unit: String
+) {
     val progress = if (consumed != null && target > 0) {
         (consumed / target).toFloat().coerceIn(0f, 1f)
     } else {
         0f
     }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
     ) {
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(label)
+
             Text(
-                if(consumed != null){
+                label,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            Text(
+                if (consumed != null) {
                     "${consumed.toInt()}/${target.toInt()} $unit"
                 } else {
                     "Not available"
-                }
+                },
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
+
         Spacer(Modifier.height(6.dp))
+
         LinearProgressIndicator(
-            progress = {progress},
-            modifier = Modifier.fillMaxWidth()
+            progress = { progress },
+            modifier = Modifier.fillMaxWidth(),
+            color = BrandOceanTeal,
+            trackColor = MaterialTheme.colorScheme.surfaceVariant
         )
     }
-
 }

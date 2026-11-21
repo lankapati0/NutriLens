@@ -20,7 +20,7 @@ import com.akhilav.nutrilens.data.local.entity.WaterIntakeEntity
 @Database(
     entities = [ProductEntity::class, FoodConsumptionEntity::class, ScanHistoryEntity::class, MealPlanEntity::class,
         WaterIntakeEntity::class, UserProfileEntity::class],
-    version = 9,
+    version = 10,
     exportSchema = false
 )
 abstract class NutriLensDatabase : RoomDatabase(){
@@ -151,6 +151,13 @@ abstract class NutriLensDatabase : RoomDatabase(){
                 )
             }
         }
+        val MIGRATION_9_10 = object : Migration(9, 10) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE user_profile ADD COLUMN bmrSex TEXT")
+                db.execSQL("ALTER TABLE user_profile ADD COLUMN activityLevel TEXT")
+            }
+        }
+
 
 
     }

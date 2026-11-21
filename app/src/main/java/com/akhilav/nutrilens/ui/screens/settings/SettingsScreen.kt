@@ -8,13 +8,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.DarkMode
+import androidx.compose.material.icons.outlined.Description
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LightMode
+import androidx.compose.material.icons.outlined.Policy
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.Icon
@@ -41,25 +47,32 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerDialog
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.remote.creation.dsl.verticalScroll
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
+import com.akhilav.nutrilens.ui.theme.BrandDeepTeal
+import com.akhilav.nutrilens.ui.theme.BrandOceanTeal
+import com.akhilav.nutrilens.ui.theme.component.GlassCard
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SettingsScreen(onThemeChange:(String)-> Unit,
-                   selectedTheme: String,
-                   settingsViewModel: SettingsViewModel = hiltViewModel()
-) {
 
+@Composable
+fun SettingsScreen(
+    onThemeChange: (String) -> Unit,
+    selectedTheme: String,
+    settingsViewModel: SettingsViewModel = hiltViewModel()
+) {
     val calorieTarget by settingsViewModel.dailyCalorieTarget.collectAsStateWithLifecycle()
     val proteinTarget by settingsViewModel.dailyProteinTarget.collectAsStateWithLifecycle()
     val carbsTarget by settingsViewModel.dailyCarbsTarget.collectAsStateWithLifecycle()
     val fatTarget by settingsViewModel.dailyFatTarget.collectAsStateWithLifecycle()
     val waterTarget by settingsViewModel.dailyWaterTarget.collectAsStateWithLifecycle()
+
     val mealRemindersEnabled by settingsViewModel.mealRemindersEnabled.collectAsStateWithLifecycle()
     val mealReminderHour by settingsViewModel.mealReminderHour.collectAsStateWithLifecycle()
     val mealReminderMinute by settingsViewModel.mealReminderMinute.collectAsStateWithLifecycle()
@@ -72,7 +85,6 @@ fun SettingsScreen(onThemeChange:(String)-> Unit,
 
     var showWaterTimePicker by remember { mutableStateOf(false) }
 
-
     var editingGoal by remember { mutableStateOf<String?>(null) }
     var goalInput by remember { mutableStateOf("") }
 
@@ -83,304 +95,439 @@ fun SettingsScreen(onThemeChange:(String)-> Unit,
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ){
-            Text(
-                text = "Theme",
-                style = MaterialTheme.typography.titleMedium
-            )
-            SingleChoiceSegmentedButtonRow {
-                SegmentedButton(
-                    selected = selectedTheme == "System",
-                    onClick = {onThemeChange("System")},
-                    shape = SegmentedButtonDefaults.itemShape(index = 0, count = 3)
-                ) { Text("Auto")}
-                SegmentedButton(
-                    selected = selectedTheme == "Light",
-                    onClick = {onThemeChange("Light")},
-                    shape = SegmentedButtonDefaults.itemShape(index = 1, count = 3)
+
+        // Theme
+        GlassCard(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(
+                    "Appearance",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                Text(
+                    "Choose your preferred theme",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                SingleChoiceSegmentedButtonRow(
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Icon(imageVector = Icons.Outlined.LightMode,contentDescription = "Light theme")
-                }
-                SegmentedButton(
-                    selected = selectedTheme == "Dark",
-                    onClick = {onThemeChange("Dark")},
-                    shape = SegmentedButtonDefaults.itemShape(index = 2, count = 3)
-                ) {
-                    Icon(imageVector = Icons.Outlined.DarkMode,contentDescription = "Dark theme")
+                    SegmentedButton(
+                        selected = selectedTheme == "System",
+                        onClick = { onThemeChange("System") },
+                        shape = SegmentedButtonDefaults.itemShape(index = 0, count = 3)
+                    ) {
+                        Text("Auto")
+                    }
+
+                    SegmentedButton(
+                        selected = selectedTheme == "Light",
+                        onClick = { onThemeChange("Light") },
+                        shape = SegmentedButtonDefaults.itemShape(index = 1, count = 3)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.LightMode,
+                            contentDescription = "Light theme"
+                        )
+                    }
+
+                    SegmentedButton(
+                        selected = selectedTheme == "Dark",
+                        onClick = { onThemeChange("Dark") },
+                        shape = SegmentedButtonDefaults.itemShape(index = 2, count = 3)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.DarkMode,
+                            contentDescription = "Dark theme"
+                        )
+                    }
                 }
             }
         }
 
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface
-            )
-        ){
+        // Daily Goals
+        GlassCard(modifier = Modifier.fillMaxWidth()) {
             Column(
                 modifier = Modifier.padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
-            ){
+            ) {
                 Text(
-                    text="Daily Goals",
-                    style = MaterialTheme.typography.titleLarge
+                    "Daily Goals",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
-                GoalRow("Calories","${calorieTarget} kcal") {
+                Text(
+                    "Set your daily nutrition targets",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                GoalRow("Calories", "$calorieTarget kcal") {
                     editingGoal = "Calories"
                     goalInput = calorieTarget.toString()
                 }
 
-                GoalRow("Protein","${proteinTarget} g") {
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+                GoalRow("Protein", "$proteinTarget g") {
                     editingGoal = "Protein"
                     goalInput = proteinTarget.toString()
                 }
 
-                GoalRow("Carbohydrates","${carbsTarget} g") {
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+                GoalRow("Carbohydrates", "$carbsTarget g") {
                     editingGoal = "Carbohydrates"
                     goalInput = carbsTarget.toString()
                 }
 
-                GoalRow("Fat","${fatTarget} g") {
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+                GoalRow("Fat", "$fatTarget g") {
                     editingGoal = "Fat"
                     goalInput = fatTarget.toString()
                 }
 
-                GoalRow("Water","${waterTarget} ml") {
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+                GoalRow("Water", "$waterTarget ml") {
                     editingGoal = "Water"
                     goalInput = waterTarget.toString()
                 }
-
             }
+        }
 
-            Card(
-                modifier = Modifier.fillMaxWidth()
+        // Notifications
+        GlassCard(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        "Notifications",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Text(
+                        if (notificationsEnabled) {
+                            "Reminders are enabled"
+                        } else {
+                            "All scheduled reminders are disabled"
+                        },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                Switch(
+                    checked = notificationsEnabled,
+                    onCheckedChange = {
+                        settingsViewModel.saveNotificationEnabled(it)
+                    },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = Color.White,
+                        checkedTrackColor = BrandOceanTeal
+                    )
+                )
+            }
+        }
+
+        // Meal Reminders
+        GlassCard(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            "Notifications",
-                            style = MaterialTheme.typography.titleLarge
+                            "Meal Reminders",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
+
                         Text(
-                            if (notificationsEnabled) {
-                                "Reminders are enabled"
+                            if (mealRemindersEnabled) "Enabled" else "Disabled",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = if (mealRemindersEnabled) {
+                                BrandOceanTeal
                             } else {
-                                "All scheduled reminders are disabled"
-                            },
-                            style = MaterialTheme.typography.bodySmall
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            }
                         )
                     }
 
                     Switch(
-                        checked = notificationsEnabled,
+                        checked = mealRemindersEnabled,
                         onCheckedChange = {
-                            settingsViewModel.saveNotificationEnabled(it)
-                        })
+                            settingsViewModel.saveMealRemindersEnabled(it)
+                        },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color.White,
+                            checkedTrackColor = BrandOceanTeal
+                        )
+                    )
                 }
-            }
-            Spacer(modifier = Modifier.height(20.dp))
 
-            Card(modifier = Modifier.fillMaxWidth()){
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                OutlinedButton(
+                    onClick = { showMealTimePicker = true },
+                    enabled = mealRemindersEnabled,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = BrandDeepTeal
+                    )
                 ) {
-                    Text(
-                        text = "Meal Reminders",
-                        style = MaterialTheme.typography.titleLarge
+                    Icon(
+                        Icons.Outlined.AccessTime,
+                        contentDescription = null
                     )
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ){
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text("Daily meal reminder")
-                            Text(
-                                if (mealRemindersEnabled) "Enabled" else "Disabled",
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                        }
-                        Switch(
-                            checked = mealRemindersEnabled,
-                            onCheckedChange = {
-                                settingsViewModel.saveMealRemindersEnabled(it)
-                            }
-                        )
-                    }
-                    OutlinedButton(
-                        onClick = { showMealTimePicker = true },
-                        enabled = mealRemindersEnabled,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = String.format(
-                                java.util.Locale.getDefault(),
-                                "Reminder time: %02d:%02d",
-                                mealReminderHour,
-                                mealReminderMinute
-                            )
-                        )
-                    }
-                }
-            }
-            Spacer(modifier = Modifier.height(20.dp))
-            Card(modifier = Modifier.fillMaxWidth()){
-                Column(modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        "Water Reminders",
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ){
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text("Daily water reminder")
-                            Text(
-                                if (waterRemindersEnabled) "Enabled" else "Disabled",
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                        }
-
-                        Switch(
-                            checked = waterRemindersEnabled,
-                            onCheckedChange = {
-                                settingsViewModel.saveWaterRemindersEnabled(it)
-                            }
+                        String.format(
+                            java.util.Locale.getDefault(),
+                            "Reminder time: %02d:%02d",
+                            mealReminderHour,
+                            mealReminderMinute
                         )
-                    }
-                    OutlinedButton(
-                        onClick = { showWaterTimePicker = true },
-                        enabled = waterRemindersEnabled,
-                        modifier = Modifier.fillMaxWidth()
-                    ){
-                        Text(
-                            String.format(
-                                Locale.getDefault(),
-                                "Reminder time: %02d:%02d",
-                                waterReminderHour,
-                                waterReminderMinute
-                            )
-                        )
-                    }
-
-
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-            Card(modifier= Modifier.fillMaxWidth()){
-                Column(modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(
-                        "About NutriLens",
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                    Text(
-                        "NutriLens helps you understand food nutrition, " +
-                                "track daily meals, monitor water intake, " +
-                                "and make informed food choices.",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-
-                    HorizontalDivider()
-                    Text(
-                        "Version 1.0",
-                        style = MaterialTheme.typography.bodySmall
                     )
                 }
             }
-
-            Spacer(modifier=Modifier.height(16.dp))
-            Card(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Text(
-                        "Legal",
-                        style = MaterialTheme.typography.titleLarge
-                    )
-
-                    Text(
-                        "Privacy Policy",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-
-                    HorizontalDivider()
-
-                    Text(
-                        "Terms of Use",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
-            }
-
         }
 
+        // Water Reminders
+        GlassCard(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            "Water Reminders",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
 
+                        Text(
+                            if (waterRemindersEnabled) "Enabled" else "Disabled",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = if (waterRemindersEnabled) {
+                                BrandOceanTeal
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            }
+                        )
+                    }
+
+                    Switch(
+                        checked = waterRemindersEnabled,
+                        onCheckedChange = {
+                            settingsViewModel.saveWaterRemindersEnabled(it)
+                        },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color.White,
+                            checkedTrackColor = BrandOceanTeal
+                        )
+                    )
+                }
+
+                OutlinedButton(
+                    onClick = { showWaterTimePicker = true },
+                    enabled = waterRemindersEnabled,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = BrandDeepTeal
+                    )
+                ) {
+                    Icon(
+                        Icons.Outlined.AccessTime,
+                        contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        String.format(
+                            Locale.getDefault(),
+                            "Reminder time: %02d:%02d",
+                            waterReminderHour,
+                            waterReminderMinute
+                        )
+                    )
+                }
+            }
+        }
+
+        // About
+        GlassCard(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Outlined.Info,
+                        contentDescription = null,
+                        tint = BrandOceanTeal
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        "About NutriLens",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+
+                Text(
+                    "NutriLens helps you understand food nutrition, " +
+                            "track daily meals, monitor water intake, " +
+                            "and make informed food choices.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+                Text(
+                    "Version 1.0",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+
+        // Legal
+        GlassCard(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(
+                    "Legal",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Outlined.Policy,
+                        contentDescription = null,
+                        tint = BrandOceanTeal
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        "Privacy Policy",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Outlined.Description,
+                        contentDescription = null,
+                        tint = BrandOceanTeal
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        "Terms of Use",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
     }
 
-    if(showMealTimePicker){
-        val timePickerState = rememberTimePickerState(initialHour = mealReminderHour, initialMinute = mealReminderMinute, is24Hour = true)
+    // Meal Time Picker
+    if (showMealTimePicker) {
+        val timePickerState = rememberTimePickerState(
+            initialHour = mealReminderHour,
+            initialMinute = mealReminderMinute,
+            is24Hour = true
+        )
 
         TimePickerDialog(
             onDismissRequest = {
                 showMealTimePicker = false
             },
             confirmButton = {
-                TextButton(onClick = {
-                    settingsViewModel.saveMealRemindersTime(timePickerState.hour, timePickerState.minute)
-                    showMealTimePicker = false
-                }) {Text("Save") }
+                TextButton(
+                    onClick = {
+                        settingsViewModel.saveMealRemindersTime(
+                            timePickerState.hour,
+                            timePickerState.minute
+                        )
+                        showMealTimePicker = false
+                    }
+                ) {
+                    Text("Save", color = BrandOceanTeal)
+                }
             },
             title = {
-
+                Text("Meal Reminder Time")
             },
             dismissButton = {
-                TextButton(onClick = {showMealTimePicker=false}) {Text("Cancel") }
+                TextButton(
+                    onClick = { showMealTimePicker = false }
+                ) {
+                    Text("Cancel")
+                }
             }
         ) {
             TimePicker(state = timePickerState)
         }
-
     }
 
-    if(editingGoal != null){
+    // Edit Goal Dialog
+    if (editingGoal != null) {
         AlertDialog(
             onDismissRequest = {
                 editingGoal = null
             },
             dismissButton = {
-                TextButton(onClick = {
-                    editingGoal = null
-                }) { Text("Cancel")}
+                TextButton(
+                    onClick = {
+                        editingGoal = null
+                    }
+                ) {
+                    Text("Cancel")
+                }
             },
             title = {
-                Text("Edit ${editingGoal} Goal")
+                Text("Edit $editingGoal Goal")
             },
-            text={
+            text = {
                 OutlinedTextField(
                     value = goalInput,
-                    onValueChange = {goalInput = it},
+                    onValueChange = { goalInput = it },
                     singleLine = true,
-                    label = {Text("Daily target")},
+                    label = { Text("Daily target") },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = if (editingGoal == "Water") {
                             KeyboardType.Number
@@ -391,28 +538,31 @@ fun SettingsScreen(onThemeChange:(String)-> Unit,
                 )
             },
             confirmButton = {
-                TextButton(onClick = {
-                    when(editingGoal){
-                        "Calories" -> settingsViewModel.saveCalorieTarget(goalInput.toDouble())
-                        "Protein" -> settingsViewModel.saveProteinTarget(goalInput.toDouble())
-                        "Carbohydrates" -> settingsViewModel.saveCarbsTarget(goalInput.toDouble())
-                        "Fat" -> settingsViewModel.saveFatTarget(goalInput.toDouble())
-                        "Water" -> settingsViewModel.saveWaterTarget(goalInput.toInt())
+                TextButton(
+                    onClick = {
+                        when (editingGoal) {
+                            "Calories" -> settingsViewModel.saveCalorieTarget(goalInput.toDouble())
+                            "Protein" -> settingsViewModel.saveProteinTarget(goalInput.toDouble())
+                            "Carbohydrates" -> settingsViewModel.saveCarbsTarget(goalInput.toDouble())
+                            "Fat" -> settingsViewModel.saveFatTarget(goalInput.toDouble())
+                            "Water" -> settingsViewModel.saveWaterTarget(goalInput.toInt())
+                        }
+                        editingGoal = null
+                    },
+                    enabled = if (editingGoal == "Water") {
+                        (goalInput.toIntOrNull() ?: 0) > 0
+                    } else {
+                        (goalInput.toDoubleOrNull() ?: 0.0) > 0.0
                     }
-                    editingGoal = null
-                },
-                    enabled = if(editingGoal == "Water"){
-                        (goalInput.toIntOrNull() ?: 0)>0
-                    }else {
-                        (goalInput.toDoubleOrNull()?: 0.0)>0.0
-                    }
-
-                ) {Text("Save") }
+                ) {
+                    Text("Save", color = BrandOceanTeal)
+                }
             }
         )
     }
 
-    if(showWaterTimePicker){
+    // Water Time Picker
+    if (showWaterTimePicker) {
         val waterTimePickerState = rememberTimePickerState(
             initialHour = waterReminderHour,
             initialMinute = waterReminderMinute,
@@ -424,33 +574,59 @@ fun SettingsScreen(onThemeChange:(String)-> Unit,
                 showWaterTimePicker = false
             },
             title = {
-
+                Text("Water Reminder Time")
             },
             confirmButton = {
-                TextButton(onClick = {
-                    settingsViewModel.saveWaterReminderTime(
-                        waterTimePickerState.hour,waterTimePickerState.minute
-                    )
-                    showWaterTimePicker = false
-                }) { Text("Save") }
+                TextButton(
+                    onClick = {
+                        settingsViewModel.saveWaterReminderTime(
+                            waterTimePickerState.hour,
+                            waterTimePickerState.minute
+                        )
+                        showWaterTimePicker = false
+                    }
+                ) {
+                    Text("Save", color = BrandOceanTeal)
+                }
             },
             dismissButton = {
-                TextButton(onClick = {showWaterTimePicker = false}) { Text("Cancel") }
+                TextButton(
+                    onClick = { showWaterTimePicker = false }
+                ) {
+                    Text("Cancel")
+                }
             }
-        ) {         TimePicker(state = waterTimePickerState) }
+        ) {
+            TimePicker(state = waterTimePickerState)
+        }
     }
 }
 
-
 @Composable
-fun GoalRow(title:String, value:String, onEdit:()-> Unit){
-    Row(modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically){
+fun GoalRow(title: String, value: String, onEdit: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Column(modifier = Modifier.weight(1f)) {
-            Text(title, style = MaterialTheme.typography.bodyLarge)
-            Text(value, style = MaterialTheme.typography.bodyMedium)
+            Text(
+                title,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                value,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
-        TextButton(onClick = onEdit) {
+
+        TextButton(
+            onClick = onEdit,
+            colors = ButtonDefaults.textButtonColors(
+                contentColor = BrandOceanTeal
+            )
+        ) {
             Text("Edit")
         }
     }

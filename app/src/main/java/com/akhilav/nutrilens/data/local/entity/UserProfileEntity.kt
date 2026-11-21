@@ -12,5 +12,8 @@ data class UserProfileEntity(
     val heightCm: Double? = null,
     val weightKg: Double? = null,
     val dateOfBirth: String? = null,
-    val measurementSystem: String = "Metric"
-    )
+    val measurementSystem: String = "Metric",
+    val bmrSex: String? = null,
+    val activityLevel: String? = null
+
+)
