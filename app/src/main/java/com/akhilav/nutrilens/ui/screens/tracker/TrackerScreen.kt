@@ -15,7 +15,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -38,7 +38,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.akhilav.nutrilens.ui.theme.BrandCoral
 import com.akhilav.nutrilens.ui.theme.BrandGold
 import com.akhilav.nutrilens.ui.theme.BrandOceanTeal
-import com.akhilav.nutrilens.ui.theme.component.GlassCard
+import com.akhilav.nutrilens.ui.component.GlassCard
 import com.akhilav.nutrilens.viewmodels.HomeNutritionViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -241,44 +241,53 @@ fun TrackerScreen(
                 }
             }
         } else {
+            val mealTypes = listOf("Breakfast","Lunch","Snacks","Dinner","Other")
+
+            val groupByMeals = todayConsumptions.groupBy { it.mealType }
+
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-                todayConsumptions.forEach { food ->
-                    GlassCard(modifier = Modifier.fillMaxWidth()) {
-                        Column(
-                            modifier = Modifier.padding(16.dp)
-                        ) {
-                            Text(
-                                text = food.productName,
-                                style = MaterialTheme.typography.titleMedium
-                            )
+                mealTypes.forEach { mealType ->
+                    val foods = groupByMeals[mealType].orEmpty()
+                    if (foods.isNotEmpty()){
+                        GlassCard(modifier = Modifier.fillMaxWidth()) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically){
+                                    Text(text=mealType,style = MaterialTheme.typography.titleMedium)
 
-                            Spacer(Modifier.height(4.dp))
+                                    Text("${foods.size} items",style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                                Spacer(Modifier.height(12.dp))
 
-                            Text(
-                                text = "Consumed: ${food.quantityGrams.toString().removeSuffix(".0")} g",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                                foods.forEachIndexed { index, food ->
+                                    Text(text = food.productName,
+                                        style = MaterialTheme.typography.titleSmall
+                                    )
+                                    Spacer(Modifier.height(4.dp))
+                                    Text("${food.quantityGrams.toString().removeSuffix(".0")} g",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant)
 
-                            Spacer(Modifier.height(6.dp))
+                                    Text(text = food.calories?.let {
+                                        "${it.toInt()} kcal"
+                                    } ?: "Calories not available",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = BrandOceanTeal)
 
-                            Text(
-                                text = food.calories?.let {
-                                    "Calories: ${it.toInt()} kcal"
-                                } ?: "Calories: Not available",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
+                                    Text(text=formatConsumptionTime(food.consumedAt),style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant)
 
-                            Spacer(Modifier.height(4.dp))
-
-                            Text(
-                                text = "Logged at: ${formatConsumptionTime(food.consumedAt)}",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                                    if(index < foods.lastIndex){
+                                        HorizontalDivider(
+                                            modifier = Modifier.padding(vertical = 12.dp)
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }

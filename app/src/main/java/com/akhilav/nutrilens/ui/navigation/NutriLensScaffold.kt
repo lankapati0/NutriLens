@@ -1,6 +1,7 @@
 
 package com.akhilav.nutriscan.ui.navigation
 
+import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -23,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.akhilav.nutrilens.ui.navigation.NutriLensNavGraph
@@ -67,6 +69,9 @@ fun NutriLensScaffold(
                                 }
 
                                 navController.navigate(item.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = false
+                                    }
                                     launchSingleTop = true
                                 }
                             },
@@ -105,12 +110,10 @@ fun NutriLensScaffold(
                             selected = currentRoute == item.route,
                             onClick = {
                                 navController.navigate(item.route) {
-                                    launchSingleTop = true
                                     popUpTo(Screen.Home.route) {
-                                        saveState = true
+                                        inclusive = false
                                     }
-                                    restoreState = true
-                                }
+                                    launchSingleTop = true                                }
                             },
                             icon = {
                                 Icon(

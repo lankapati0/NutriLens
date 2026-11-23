@@ -59,7 +59,7 @@ class ScannerViewModel @Inject constructor(
         }
     }
 
-    fun saveConsumption(quantityGrams: Double){
+    fun saveConsumption(quantityGrams: Double,mealType: String = "Other"){
         val currentProduct = _product.value ?: return
         viewModelScope.launch {
             try {
@@ -71,7 +71,17 @@ class ScannerViewModel @Inject constructor(
                         calories = currentProduct.energyKcal?.let { it * quantityGrams/100.0 },
                         protein = currentProduct.proteins?.let { it*quantityGrams/100.0 },
                         carbohydrates = currentProduct.carbohydrates?.let { it*quantityGrams/100.0 },
-                        fat = currentProduct.fat?.let { it*quantityGrams/100.0 }
+                        fat = currentProduct.fat?.let { it*quantityGrams/100.0 },
+                        vitaminA = currentProduct.vitaminA?.let { it*quantityGrams/100.0 },
+                        vitaminC = currentProduct.vitaminC?.let { it*quantityGrams/100.0 },
+                        vitaminD = currentProduct.vitaminD?.let { it*quantityGrams/100.0 },
+                        vitaminB12 = currentProduct.vitaminB12?.let { it*quantityGrams/100.0 },
+                        magnesium = currentProduct.magnesium?.let { it*quantityGrams/100.0 },
+                        potassium = currentProduct.potassium?.let { it*quantityGrams/100.0 },
+                        zinc = currentProduct.zinc?.let { it*quantityGrams/100.0 },
+                        calcium = currentProduct.calcium?.let { it*quantityGrams/100.0 },
+                        iron = currentProduct.iron?.let { it*quantityGrams/100.0 },
+                        mealType = mealType
                     )
                 )
             }catch (e: Exception){

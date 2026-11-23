@@ -9,6 +9,8 @@ val drawerItems = listOf(
     DrawerNavItem("Healthy Alternatives", Screen.Alternatives.route),
     DrawerNavItem("Ingredient Intelligence", Screen.Ingredients.route),
     DrawerNavItem("Meal Planner", Screen.MealPlanner.route),
+    DrawerNavItem("Micronutrients",Screen.MicroNutrients.route),
+    DrawerNavItem("Weight Tracker", Screen.WeightTrack.route),
     DrawerNavItem("Water Tracker", Screen.WaterTracker.route),
     DrawerNavItem("Reports & Export", Screen.Reports.route),
     DrawerNavItem("Settings", Screen.Settings.route),

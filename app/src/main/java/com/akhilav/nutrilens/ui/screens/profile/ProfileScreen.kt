@@ -1,13 +1,9 @@
 package com.akhilav.nutrilens.ui.screens.profile
-import android.annotation.SuppressLint
-import android.widget.NumberPicker
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
-import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,8 +11,6 @@ import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,7 +30,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -71,7 +64,6 @@ import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -80,7 +72,7 @@ import coil3.compose.AsyncImage
 import com.akhilav.nutrilens.data.local.entity.UserProfileEntity
 import com.akhilav.nutrilens.ui.theme.BrandDeepTeal
 import com.akhilav.nutrilens.ui.theme.BrandOceanTeal
-import com.akhilav.nutrilens.ui.theme.component.GlassCard
+import com.akhilav.nutrilens.ui.component.GlassCard
 import com.akhilav.nutrilens.viewmodels.profile.UserProfileViewModel
 import com.akhilav.nutrilens.viewmodels.settings.SettingsViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -325,7 +317,7 @@ fun ProfileScreen(
                         .background(MaterialTheme.colorScheme.surfaceVariant)
                         .clickable {
                             imagePicker.launch(
-                                androidx.activity.result.PickVisualMediaRequest(
+                                PickVisualMediaRequest(
                                     ActivityResultContracts.PickVisualMedia.ImageOnly
                                 )
                             )

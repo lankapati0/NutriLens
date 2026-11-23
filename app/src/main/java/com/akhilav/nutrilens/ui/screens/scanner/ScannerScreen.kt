@@ -2,12 +2,9 @@ package com.akhilav.nutrilens.ui.screens.scanner
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -44,7 +41,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.akhilav.nutrilens.ui.screens.nutrition.ProductNutritionScreen
 import com.akhilav.nutrilens.ui.theme.BrandDeepTeal
 import com.akhilav.nutrilens.ui.theme.BrandOceanTeal
-import com.akhilav.nutrilens.ui.theme.component.GlassCard
+import com.akhilav.nutrilens.ui.component.GlassCard
+import com.akhilav.nutrilens.utils.CameraPreview
 import com.akhilav.nutrilens.viewmodels.ScannerViewModel
 import com.akhilav.nutrilens.viewmodels.favorites.FavoritesViewModel
 
@@ -84,8 +82,8 @@ fun ScannerScreen(
     if (product != null) {
         ProductNutritionScreen(
             product = product!!,
-            onSaveConsumption = { quantity ->
-                viewModel.saveConsumption(quantity)
+            onSaveConsumption = { quantity,mealType ->
+                viewModel.saveConsumption(quantityGrams = quantity,mealType= mealType)
             },
             onToggleFavorite = { barcode, isFavorite ->
                 favoritesViewModel.updateFavorite(barcode, isFavorite)

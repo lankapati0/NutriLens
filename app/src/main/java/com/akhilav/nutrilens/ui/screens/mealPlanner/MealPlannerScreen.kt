@@ -22,8 +22,6 @@ import androidx.compose.material.icons.filled.RestaurantMenu
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.DatePickerDefaults.dateFormatter
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,7 +44,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.akhilav.nutrilens.ui.theme.BrandCoral
 import com.akhilav.nutrilens.ui.theme.BrandDeepTeal
 import com.akhilav.nutrilens.ui.theme.BrandOceanTeal
-import com.akhilav.nutrilens.ui.theme.component.GlassCard
+import com.akhilav.nutrilens.ui.component.GlassCard
 import com.akhilav.nutrilens.viewmodels.mealplanner.MealPlanViewModel
 import java.text.DateFormat
 import java.util.Date

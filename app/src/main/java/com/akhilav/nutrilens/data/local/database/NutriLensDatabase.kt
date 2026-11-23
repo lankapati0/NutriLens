@@ -10,17 +10,19 @@ import com.akhilav.nutrilens.data.local.dao.ProductDao
 import com.akhilav.nutrilens.data.local.dao.ScanHistoryDao
 import com.akhilav.nutrilens.data.local.dao.UserProfileDao
 import com.akhilav.nutrilens.data.local.dao.WaterIntakeDao
+import com.akhilav.nutrilens.data.local.dao.WeightEntryDao
 import com.akhilav.nutrilens.data.local.entity.FoodConsumptionEntity
 import com.akhilav.nutrilens.data.local.entity.MealPlanEntity
 import com.akhilav.nutrilens.data.local.entity.ProductEntity
 import com.akhilav.nutrilens.data.local.entity.ScanHistoryEntity
 import com.akhilav.nutrilens.data.local.entity.UserProfileEntity
 import com.akhilav.nutrilens.data.local.entity.WaterIntakeEntity
+import com.akhilav.nutrilens.data.local.entity.WeightEntryEntity
 
 @Database(
     entities = [ProductEntity::class, FoodConsumptionEntity::class, ScanHistoryEntity::class, MealPlanEntity::class,
-        WaterIntakeEntity::class, UserProfileEntity::class],
-    version = 10,
+        WaterIntakeEntity::class, UserProfileEntity::class, WeightEntryEntity::class],
+    version = 15,
     exportSchema = false
 )
 abstract class NutriLensDatabase : RoomDatabase(){
@@ -30,6 +32,7 @@ abstract class NutriLensDatabase : RoomDatabase(){
     abstract fun mealPlanDao(): MealPlanDao
     abstract fun walterIntakeDao(): WaterIntakeDao
     abstract fun userProfileDao(): UserProfileDao
+    abstract fun weightEntryDao(): WeightEntryDao
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
@@ -157,7 +160,70 @@ abstract class NutriLensDatabase : RoomDatabase(){
                 db.execSQL("ALTER TABLE user_profile ADD COLUMN activityLevel TEXT")
             }
         }
+        val MIGRATION_10_11 = object : Migration(10, 11) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "ALTER TABLE food_consumption ADD COLUMN mealType TEXT NOT NULL DEFAULT 'Other'"
+                )
+            }
+        }
+        val MIGRATION_11_12 = object : Migration(11, 12) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+            CREATE TABLE IF NOT EXISTS weight_entries (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                weightKg REAL NOT NULL,
+                recordedAt INTEGER NOT NULL
+            )
+            """.trimIndent()
+                )
+            }
+        }
+        val MIGRATION_12_13 = object : Migration(12, 13) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE food_consumption ADD COLUMN vitaminA REAL")
+                db.execSQL("ALTER TABLE food_consumption ADD COLUMN vitaminC REAL")
+                db.execSQL("ALTER TABLE food_consumption ADD COLUMN vitaminD REAL")
+                db.execSQL("ALTER TABLE food_consumption ADD COLUMN vitaminB12 REAL")
+                db.execSQL("ALTER TABLE food_consumption ADD COLUMN calcium REAL")
+                db.execSQL("ALTER TABLE food_consumption ADD COLUMN iron REAL")
+                db.execSQL("ALTER TABLE food_consumption ADD COLUMN potassium REAL")
+                db.execSQL("ALTER TABLE food_consumption ADD COLUMN magnesium REAL")
+                db.execSQL("ALTER TABLE food_consumption ADD COLUMN zinc REAL")
+            }
+        }
+        val MIGRATION_13_14 = object : Migration(13, 14) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE products ADD COLUMN vitaminA REAL")
+                db.execSQL("ALTER TABLE products ADD COLUMN vitaminC REAL")
+                db.execSQL("ALTER TABLE products ADD COLUMN vitaminD REAL")
+                db.execSQL("ALTER TABLE products ADD COLUMN vitaminB12 REAL")
+                db.execSQL("ALTER TABLE products ADD COLUMN calcium REAL")
+                db.execSQL("ALTER TABLE products ADD COLUMN iron REAL")
+                db.execSQL("ALTER TABLE products ADD COLUMN potassium REAL")
+                db.execSQL("ALTER TABLE products ADD COLUMN magnesium REAL")
+                db.execSQL("ALTER TABLE products ADD COLUMN zinc REAL")
+            }
+        }
 
+        val MIGRATION_14_15 = object : Migration(14,15) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE products ADD COLUMN fatLevel TEXT")
+                db.execSQL("ALTER TABLE products ADD COLUMN saturatedFatLevel TEXT")
+                db.execSQL("ALTER TABLE products ADD COLUMN sugarLevel TEXT")
+                db.execSQL("ALTER TABLE products ADD COLUMN saltLevel TEXT")
+
+                db.execSQL("ALTER TABLE products ADD COLUMN additivesCount INTEGER")
+                db.execSQL("ALTER TABLE products ADD COLUMN additivesTags TEXT")
+                db.execSQL("ALTER TABLE products ADD COLUMN allergens TEXT")
+                db.execSQL("ALTER TABLE products ADD COLUMN allergensTags TEXT")
+                db.execSQL("ALTER TABLE products ADD COLUMN tracesTags TEXT")
+                db.execSQL("ALTER TABLE products ADD COLUMN ingredientsAnalysisTags TEXT")
+                db.execSQL("ALTER TABLE products ADD COLUMN labelsTags TEXT")
+                db.execSQL("ALTER TABLE products ADD COLUMN ecoScoreGrade TEXT")
+            }
+        }
 
 
     }

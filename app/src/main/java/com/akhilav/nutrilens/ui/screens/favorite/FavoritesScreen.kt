@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,7 +28,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.akhilav.nutrilens.ui.theme.BrandCoral
 import com.akhilav.nutrilens.ui.theme.BrandOceanTeal
-import com.akhilav.nutrilens.ui.theme.component.GlassCard
+import com.akhilav.nutrilens.ui.component.GlassCard
 import com.akhilav.nutrilens.viewmodels.favorites.FavoritesViewModel
 
 

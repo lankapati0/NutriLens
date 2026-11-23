@@ -5,12 +5,24 @@ import androidx.room.Insert
 import androidx.room.Query
 import com.akhilav.nutrilens.data.local.entity.FoodConsumptionEntity
 import kotlinx.coroutines.flow.Flow
+import kotlin.Double
 
 data class DailyNutritionSummary(
     val calories: Double?,
     val protein: Double?,
     val carbohydrates: Double?,
     val fat: Double?
+)
+data class DailyMicronutritionSummary(
+    val vitaminA: Double?,
+    val vitaminC: Double?,
+    val vitaminD: Double?,
+    val vitaminB12: Double?,
+    val calcium: Double?,
+    val magnesium: Double?,
+    val potassium: Double?,
+    val iron: Double?,
+    val zinc: Double?
 )
 @Dao
 interface FoodConsumptionDao {
@@ -29,4 +41,12 @@ interface FoodConsumptionDao {
 
     @Query("""SELECT * FROM food_consumption WHERE consumedAt >= :startTime AND consumedAt < :endTime ORDER BY consumedAt ASC""")
     fun getConsumptionsBetween(startTime: Long,endTime: Long): Flow<List<FoodConsumptionEntity>>
+
+    @Query("""SELECT * FROM food_consumption WHERE consumedAt >= :startTime AND consumedAt < :endTime AND mealType = :mealType ORDER BY consumedAt DESC""")
+    fun getConsumptionsByMeal(startTime: Long,endTime: Long,mealType: String): Flow<List<FoodConsumptionEntity>>
+
+    @Query("""
+    SELECT
+        SUM(vitaminA) AS vitaminA, SUM(vitaminC) AS vitaminC, SUM(vitaminD) AS vitaminD, SUM(vitaminB12) AS vitaminB12, SUM(calcium) AS calcium, SUM(iron) AS iron, SUM(potassium) AS potassium, SUM(magnesium) AS magnesium, SUM(zinc) AS zinc FROM food_consumption WHERE consumedAt >= :startTime AND consumedAt < :endTime""")
+    fun getDailyMicronutrientSummary(startTime: Long,endTime: Long): Flow<DailyMicronutritionSummary>
 }

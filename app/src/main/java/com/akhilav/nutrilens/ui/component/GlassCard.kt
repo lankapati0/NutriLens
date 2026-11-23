@@ -1,4 +1,4 @@
-package com.akhilav.nutrilens.ui.theme.component
+package com.akhilav.nutrilens.ui.component
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
+import com.akhilav.nutrilens.ui.theme.DarkBackground
 import com.akhilav.nutrilens.ui.theme.GlassBorderDark
 import com.akhilav.nutrilens.ui.theme.GlassBorderLight
 import com.akhilav.nutrilens.ui.theme.GlassDark
@@ -24,7 +25,7 @@ fun GlassCard(
     modifier : Modifier = Modifier,
     content:@Composable ColumnScope.()-> Unit
 ){
-    val isDark = MaterialTheme.colorScheme.background == com.akhilav.nutrilens.ui.theme.DarkBackground
+    val isDark = MaterialTheme.colorScheme.background == DarkBackground
 
     val shape = RoundedCornerShape(24.dp)
     val glassBrush = Brush.verticalGradient(

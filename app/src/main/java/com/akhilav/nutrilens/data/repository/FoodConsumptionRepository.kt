@@ -1,5 +1,6 @@
 package com.akhilav.nutrilens.data.repository
 
+import com.akhilav.nutrilens.data.local.dao.DailyMicronutritionSummary
 import com.akhilav.nutrilens.data.local.dao.DailyNutritionSummary
 import com.akhilav.nutrilens.data.local.dao.FoodConsumptionDao
 import com.akhilav.nutrilens.data.local.entity.FoodConsumptionEntity
@@ -26,6 +27,15 @@ class FoodConsumptionRepository @Inject constructor(
         return foodConsumptionDao.getDailyNutritionSummary(startTime, endTime)
     }
 
+    fun getTodayMicronutrientSummary(): Flow<DailyMicronutritionSummary>{
+        val zone = ZoneId.systemDefault()
+        val today = LocalDate.now()
+        val startTime = today.atStartOfDay(zone).toInstant().toEpochMilli()
+        val endTime = today.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli()
+
+        return foodConsumptionDao.getDailyMicronutrientSummary(startTime,endTime)
+    }
+
     fun getTodayConsumptions(): Flow<List<FoodConsumptionEntity>> {
         val zone = ZoneId.systemDefault()
         val today = LocalDate.now(zone)
@@ -48,6 +58,10 @@ class FoodConsumptionRepository @Inject constructor(
         val endTime = today.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli()
 
         return foodConsumptionDao.getTodayConsumptions(startTime,endTime)
+    }
+
+    fun getFoodConsumptionByMeal(startTime: Long, endTime:Long,mealType:String): Flow<List<FoodConsumptionEntity>>{
+        return foodConsumptionDao.getConsumptionsByMeal(startTime,endTime,mealType)
     }
 
 }

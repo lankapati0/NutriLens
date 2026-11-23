@@ -18,6 +18,7 @@ import com.akhilav.nutrilens.ui.screens.favorite.FavoritesScreen
 import com.akhilav.nutrilens.ui.screens.history.ScanHistoryScreen
 import com.akhilav.nutrilens.ui.screens.home.HomeScreen
 import com.akhilav.nutrilens.ui.screens.mealPlanner.MealPlannerScreen
+import com.akhilav.nutrilens.ui.screens.micronutrient.MicronutrientScreen
 import com.akhilav.nutrilens.ui.screens.profile.ProfileScreen
 import com.akhilav.nutrilens.ui.screens.reports.ReportsScreen
 import com.akhilav.nutrilens.ui.screens.scanner.ScannerScreen
@@ -25,6 +26,7 @@ import com.akhilav.nutrilens.ui.screens.settings.SettingsScreen
 import com.akhilav.nutrilens.ui.screens.stats.StatsScreen
 import com.akhilav.nutrilens.ui.screens.tracker.TrackerScreen
 import com.akhilav.nutrilens.ui.screens.waterTracker.WaterTrackerScreen
+import com.akhilav.nutrilens.ui.screens.weightTrack.WeightTrackingScreen
 
 @Composable
 fun NutriLensNavGraph(
@@ -85,6 +87,14 @@ fun NutriLensNavGraph(
 
         composable(Screen.MealPlanner.route) {
             MealPlannerScreen()
+        }
+
+        composable(Screen.MicroNutrients.route){
+            MicronutrientScreen()
+        }
+
+        composable(Screen.WeightTrack.route){
+            WeightTrackingScreen()
         }
 
         composable(Screen.WaterTracker.route) {

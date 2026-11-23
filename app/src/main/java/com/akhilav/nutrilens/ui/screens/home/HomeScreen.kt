@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,12 +19,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardDefaults.cardColors
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.remote.creation.dsl.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -40,8 +41,9 @@ import com.akhilav.nutrilens.ui.theme.BrandDeepTeal
 import com.akhilav.nutrilens.ui.theme.BrandGold
 import com.akhilav.nutrilens.ui.theme.BrandMint
 import com.akhilav.nutrilens.ui.theme.BrandOceanTeal
-import com.akhilav.nutrilens.ui.theme.component.GlassCard
+import com.akhilav.nutrilens.ui.component.GlassCard
 import com.akhilav.nutrilens.viewmodels.HomeNutritionViewModel
+import com.akhilav.nutrilens.viewmodels.history.ScanHistoryViewModel
 import java.time.LocalTime
 
 val currentHour = LocalTime.now().hour
@@ -56,7 +58,8 @@ val greeting = when (currentHour) {
 @Composable
 fun HomeScreen(
     onScanClick: () -> Unit,
-    viewModel: HomeNutritionViewModel = hiltViewModel()
+    viewModel: HomeNutritionViewModel = hiltViewModel(),
+    scanHistoryViewModel: ScanHistoryViewModel = hiltViewModel()
 ) {
     val nutritionSummary by viewModel.nutritionSummary.collectAsStateWithLifecycle()
     val dailyCalorieTarget by viewModel.dailyCaloriesTarget.collectAsStateWithLifecycle()
@@ -64,6 +67,7 @@ fun HomeScreen(
     val dailyCarbsTarget by viewModel.dailyCarbsTarget.collectAsStateWithLifecycle()
     val dailyFatTarget by viewModel.dailyFatTarget.collectAsStateWithLifecycle()
 
+    val scanHistory by scanHistoryViewModel.scanHistory.collectAsStateWithLifecycle()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -217,7 +221,7 @@ fun HomeScreen(
         ) {
             NutritionCard(
                 title = "Calories",
-                value = "--",
+                value = nutritionSummary?.calories?.toInt()?.toString() ?: "--",
                 unit = "kcal",
                 modifier = Modifier.weight(1f),
                 accentColor = BrandOceanTeal
@@ -225,7 +229,7 @@ fun HomeScreen(
 
             NutritionCard(
                 title = "Protein",
-                value = "--",
+                value = nutritionSummary?.protein?.let { "%.1f".format(it) } ?: "--",
                 unit = "g",
                 modifier = Modifier.weight(1f),
                 accentColor = BrandMint
@@ -233,7 +237,7 @@ fun HomeScreen(
 
             NutritionCard(
                 title = "Fat",
-                value = "--",
+                value = nutritionSummary?.fat?.let { "%.1f".format(it) } ?: "--",
                 unit = "g",
                 modifier = Modifier.weight(1f),
                 accentColor = BrandCoral
@@ -348,38 +352,65 @@ fun HomeScreen(
                     .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(64.dp)
-                        .background(
-                            MaterialTheme.colorScheme.surfaceVariant,
-                            CircleShape
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "🥗",
-                        fontSize = 30.sp
-                    )
+                if(scanHistory.isEmpty()){
+                    Column(modifier = Modifier.fillMaxWidth().padding(12.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally){
+                        Text(
+                            text = "🥗",
+                            fontSize = 30.sp
+                        )
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        Text(
+                            text = "No scans yet",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Text(
+                            text = "Your scanned food products will appear here.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                } else {
+                    scanHistory.take(5).forEachIndexed { index, scan ->
+                        Row(modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
+                            verticalAlignment = Alignment.CenterVertically){
+                            Box(
+                                modifier = Modifier
+                                    .size(44.dp)
+                                    .background(
+                                        MaterialTheme.colorScheme.surfaceVariant,
+                                        CircleShape
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ){
+                                Text(text = "🥗", fontSize = 22.sp)
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column(modifier = Modifier.weight(1f)){
+                                Text(
+                                    text = scan.productName ?: "Unknown product",
+                                    style = MaterialTheme.typography.titleSmall
+                                )
+                                Text(
+                                    text = scan.barcode,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+
+                        if(index < scanHistory.take(5).lastIndex){
+                            HorizontalDivider()
+                        }
+                    }
                 }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Text(
-                    text = "No scans yet",
-                    style = MaterialTheme.typography.titleMedium
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Text(
-                    text = "Your scanned food products will appear here.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
             }
         }
-
         Spacer(modifier = Modifier.height(16.dp))
     }
 }
@@ -391,9 +422,7 @@ private fun SectionTitle(title: String, subtitle: String) {
             text = title,
             style = MaterialTheme.typography.titleLarge
         )
-
         Spacer(modifier = Modifier.height(3.dp))
-
         Text(
             text = subtitle,
             style = MaterialTheme.typography.bodySmall,
@@ -421,23 +450,18 @@ private fun NutritionCard(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.titleSmall
             )
-
             Spacer(modifier = Modifier.height(10.dp))
-
             Text(
                 text = value,
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.headlineMedium
             )
-
             Text(
                 text = unit,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodySmall
             )
-
             Spacer(modifier = Modifier.height(12.dp))
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -494,9 +518,7 @@ private fun NutritionProgressIndicator(
                 style = MaterialTheme.typography.bodyMedium
             )
         }
-
         Spacer(modifier = Modifier.height(8.dp))
-
         Box(
             modifier = Modifier
                 .fillMaxWidth()

@@ -1,4 +1,4 @@
-package com.akhilav.nutrilens.ui.screens.scanner
+package com.akhilav.nutrilens.utils
 
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis

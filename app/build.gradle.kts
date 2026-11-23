@@ -57,6 +57,7 @@ dependencies {
     // Hilt
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
+    implementation(libs.material3)
     ksp(libs.hilt.compiler)
 
 // Navigation
@@ -80,6 +81,7 @@ dependencies {
 // ML Kit
     implementation(libs.mlkit.barcode)
 
+    implementation(libs.mlkit.text.recognition)
 // Retrofit and OkHttp
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)

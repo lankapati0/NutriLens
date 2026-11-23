@@ -3,6 +3,8 @@ package com.akhilav.nutrilens.viewmodels.report
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import coil3.Bitmap
+import com.akhilav.nutrilens.data.local.datastore.NutritionPreferences
+import com.akhilav.nutrilens.data.local.entity.FoodConsumptionEntity
 import com.akhilav.nutrilens.data.repository.FoodConsumptionRepository
 import com.akhilav.nutrilens.data.repository.ReportExportManager
 import com.akhilav.nutrilens.data.repository.WaterIntakeRepository
@@ -26,7 +28,8 @@ import javax.inject.Inject
 class ReportsViewModel @Inject constructor(
     private val foodConsumptionRepository: FoodConsumptionRepository,
     private val waterIntakeRepository: WaterIntakeRepository,
-    private val reportExportManager: ReportExportManager
+    private val reportExportManager: ReportExportManager,
+    private val nutritionPreferences: NutritionPreferences
 ) : ViewModel() {
 
     private val _exportedPdf = MutableStateFlow<File?>(null)
@@ -73,7 +76,22 @@ class ReportsViewModel @Inject constructor(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(5000),
                 0
-            )
+    )
+
+    val dailyCalorieTarget = nutritionPreferences.dailyCalorieTarget
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 2000.0)
+
+    val dailyProteinTarget = nutritionPreferences.dailyProteinTarget
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 50.0)
+
+    val dailyCarbsTarget = nutritionPreferences.dailyCarbsTarget
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 275.0)
+
+    val dailyFatTarget = nutritionPreferences.dailyFatTarget
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 78.0)
+
+    val dailyWaterTarget = nutritionPreferences.dailyWaterTarget
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 2000)
 
     fun generateReportCharts(): List<Pair<String, Bitmap>> {
         val zone = ZoneId.systemDefault()
@@ -133,6 +151,64 @@ class ReportsViewModel @Inject constructor(
 
         return buildList {
 
+            fun dailyTotal(selector:(FoodConsumptionEntity)-> Double?): Double? {
+                if (daily.isEmpty() || daily.any { selector(it) == null }) {
+                    return null
+                }
+                return daily.sumOf { selector(it)!! }
+            }
+
+            add(
+                "Daily Calories" to renderer.drawCircularNutritionChart(
+                    "Daily Calories",
+                    dailyTotal { it.calories },
+                    dailyCalorieTarget.value,
+                    "kcal",
+                    android.graphics.Color.rgb(36, 158, 149)
+                )
+            )
+
+            add(
+                "Daily Protein" to renderer.drawCircularNutritionChart(
+                    "Daily Protein",
+                    dailyTotal { it.protein },
+                    dailyProteinTarget.value,
+                    "g",
+                    android.graphics.Color.rgb(139, 213, 193)
+                )
+            )
+
+            add(
+                "Daily Carbs" to renderer.drawCircularNutritionChart(
+                    "Daily Carbs",
+                    dailyTotal { it.carbohydrates },
+                    dailyCarbsTarget.value,
+                    "g",
+                    android.graphics.Color.rgb(232, 189, 114)
+                )
+            )
+
+            add(
+                "Daily Fat" to renderer.drawCircularNutritionChart(
+                    "Daily Fat",
+                    dailyTotal { it.fat },
+                    dailyFatTarget.value,
+                    "g",
+                    android.graphics.Color.rgb(242, 143, 131)
+                )
+            )
+
+            add(
+                "Daily Water" to renderer.drawCircularNutritionChart(
+                    "Daily Water",
+                    todayWaterTotal.value.toDouble(),
+                    dailyWaterTarget.value.toDouble(),
+                    "ml",
+                    android.graphics.Color.rgb(117, 185, 208)
+                )
+            )
+
+
             add(
                 "Weekly Calories" to renderer.drawBarChart(
                     "",
@@ -182,9 +258,14 @@ class ReportsViewModel @Inject constructor(
             Carbohydrates: ${calculateTotal(entries.map { it.carbohydrates })} g
             Fat: ${calculateTotal(entries.map { it.fat })} g
 
-
             Water Intake: ${todayWaterTotal.value} ml
             Food Entries: ${entries.size}
+            
+            Calorie Goal: ${dailyCalorieTarget.value.toInt()} kcal
+            Protein Goal: ${dailyProteinTarget.value.toInt()} g
+            Carbohydrate Goal: ${dailyCarbsTarget.value.toInt()} g
+            Fat Goal: ${dailyFatTarget.value.toInt()} g
+            Water Goal: ${dailyWaterTarget.value} ml
             
             WEEKLY REPORT
             Food Entries: ${weeklyConsumptions.value.size}

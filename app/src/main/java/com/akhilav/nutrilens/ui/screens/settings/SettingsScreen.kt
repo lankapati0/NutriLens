@@ -21,8 +21,6 @@ import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.Policy
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
@@ -41,7 +39,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.akhilav.nutrilens.viewmodels.settings.SettingsViewModel
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedButton
@@ -51,12 +48,11 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerDialog
 import androidx.compose.material3.rememberTimePickerState
-import androidx.compose.remote.creation.dsl.verticalScroll
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import com.akhilav.nutrilens.ui.theme.BrandDeepTeal
 import com.akhilav.nutrilens.ui.theme.BrandOceanTeal
-import com.akhilav.nutrilens.ui.theme.component.GlassCard
+import com.akhilav.nutrilens.ui.component.GlassCard
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -81,6 +77,12 @@ fun SettingsScreen(
     val waterRemindersEnabled by settingsViewModel.waterRemindersEnabled.collectAsStateWithLifecycle()
     val waterReminderHour by settingsViewModel.waterReminderHour.collectAsStateWithLifecycle()
     val waterReminderMinute by settingsViewModel.waterReminderMinute.collectAsStateWithLifecycle()
+
+    val veganEnabled by settingsViewModel.veganEnabled.collectAsStateWithLifecycle()
+    val vegetarianEnabled by settingsViewModel.vegetarianEnabled.collectAsStateWithLifecycle()
+    val glutenFreeEnabled by settingsViewModel.glutenFreeEnabled.collectAsStateWithLifecycle()
+    val dairyFreeEnabled by settingsViewModel.dairyFreeEnabled.collectAsStateWithLifecycle()
+
     val notificationsEnabled by settingsViewModel.notificationEnabled.collectAsStateWithLifecycle()
 
     var showWaterTimePicker by remember { mutableStateOf(false) }
@@ -203,6 +205,43 @@ fun SettingsScreen(
             }
         }
 
+        // Dietary Preferences
+        GlassCard(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier= Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(
+                    "Dietary Preferences",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                Text(
+                    "Choose your dietary requirements",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                DietaryPreferenceRow("Vegan",veganEnabled){
+                    settingsViewModel.saveVeganEnabled(it)
+                }
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                DietaryPreferenceRow("Vegetarian",vegetarianEnabled){
+                    settingsViewModel.saveVegetarianEnabled(it)
+                }
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+                DietaryPreferenceRow("Gluten-free",glutenFreeEnabled){
+                    settingsViewModel.saveGlutenFreeEnabled(it)
+                }
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                DietaryPreferenceRow("Dairy-free",dairyFreeEnabled){
+                    settingsViewModel.saveDairyFreeEnabled(it)
+                }
+
+            }
+        }
+
+
+
         // Notifications
         GlassCard(modifier = Modifier.fillMaxWidth()) {
             Row(
@@ -301,7 +340,7 @@ fun SettingsScreen(
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         String.format(
-                            java.util.Locale.getDefault(),
+                            Locale.getDefault(),
                             "Reminder time: %02d:%02d",
                             mealReminderHour,
                             mealReminderMinute
@@ -629,5 +668,21 @@ fun GoalRow(title: String, value: String, onEdit: () -> Unit) {
         ) {
             Text("Edit")
         }
+    }
+}
+@Composable
+fun DietaryPreferenceRow(title:String,checked: Boolean,onCheckedChange:(Boolean)-> Unit){
+    Row(modifier = Modifier.fillMaxWidth(),verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween) {
+        Text(text=title,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface)
+        Switch(checked = checked,
+            onCheckedChange = onCheckedChange,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = Color.White,
+                checkedTrackColor = BrandOceanTeal
+            )
+        )
     }
 }

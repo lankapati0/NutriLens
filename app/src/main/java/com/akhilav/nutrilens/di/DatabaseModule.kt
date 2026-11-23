@@ -2,12 +2,14 @@ package com.akhilav.nutrilens.di
 
 import android.content.Context
 import androidx.room.Room
+import androidx.work.impl.Migration_15_16
 import com.akhilav.nutrilens.data.local.dao.FoodConsumptionDao
 import com.akhilav.nutrilens.data.local.dao.MealPlanDao
 import com.akhilav.nutrilens.data.local.dao.ProductDao
 import com.akhilav.nutrilens.data.local.dao.ScanHistoryDao
 import com.akhilav.nutrilens.data.local.dao.UserProfileDao
 import com.akhilav.nutrilens.data.local.dao.WaterIntakeDao
+import com.akhilav.nutrilens.data.local.dao.WeightEntryDao
 import com.akhilav.nutrilens.data.local.database.NutriLensDatabase
 import dagger.Module
 import dagger.Provides
@@ -29,7 +31,10 @@ object DatabaseModule {
                 NutriLensDatabase.MIGRATION_3_4, NutriLensDatabase.MIGRATION_4_5,
                 NutriLensDatabase.MIGRATION_5_6, NutriLensDatabase.MIGRATION_6_7,
                 NutriLensDatabase.MIGRATION_7_8, NutriLensDatabase.MIGRATION_8_9,
-                NutriLensDatabase.MIGRATION_9_10).build()
+                NutriLensDatabase.MIGRATION_9_10,NutriLensDatabase.MIGRATION_10_11,
+                NutriLensDatabase.MIGRATION_11_12, NutriLensDatabase.MIGRATION_12_13,
+                NutriLensDatabase.MIGRATION_13_14, NutriLensDatabase.MIGRATION_14_15)
+            .build()
     }
 
     @Provides
@@ -59,4 +64,8 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideUserProfileDao(database: NutriLensDatabase): UserProfileDao = database.userProfileDao()
+
+    @Provides
+    @Singleton
+    fun provideWeightEntryDao(database: NutriLensDatabase): WeightEntryDao = database.weightEntryDao()
 }

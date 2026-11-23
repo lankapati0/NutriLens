@@ -92,6 +92,19 @@ class SettingsViewModel @Inject constructor(
     val notificationEnabled = nutritionPreferences.notificationsEnabled.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000),true)
 
+    val veganEnabled = nutritionPreferences.veganEnabled.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000),false
+    )
+    val vegetarianEnabled = nutritionPreferences.vegetarianEnabled.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000),false
+    )
+    val glutenFreeEnabled = nutritionPreferences.glutenFreeEnabled.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000),false
+    )
+    val dairyFreeEnabled = nutritionPreferences.dairyFreeEnabled.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000),false
+    )
+
     fun saveCalorieTarget(value: Double) {
         viewModelScope.launch {
             nutritionPreferences.saveDailyCalorieTarget(value)
@@ -192,6 +205,30 @@ class SettingsViewModel @Inject constructor(
                 MealReminderScheduler.cancel(context)
                 WaterReminderScheduler.cancel(context)
             }
+        }
+    }
+
+    fun saveVeganEnabled(enabled: Boolean){
+        viewModelScope.launch {
+            nutritionPreferences.saveVeganEnabled(enabled)
+        }
+    }
+
+    fun saveVegetarianEnabled(enabled: Boolean){
+        viewModelScope.launch {
+            nutritionPreferences.saveVegetarianEnabled(enabled)
+        }
+    }
+
+    fun saveGlutenFreeEnabled(enabled: Boolean){
+        viewModelScope.launch {
+            nutritionPreferences.saveGlutenFreeEnabled(enabled)
+        }
+    }
+
+    fun saveDairyFreeEnabled(enabled: Boolean){
+        viewModelScope.launch {
+            nutritionPreferences.saveDairyFreeEnabled(enabled)
         }
     }
 

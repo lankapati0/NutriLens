@@ -13,8 +13,9 @@ sealed class Screen(val route:String){
     data object Alternatives : Screen("alternatives")
     data object Ingredients : Screen("ingredients")
     data object MealPlanner : Screen("meal_planner")
+    data object MicroNutrients: Screen("micro_nutrients")
     data object WaterTracker : Screen("water_tracker")
     data object Reports : Screen("reports")
     data object Settings : Screen("settings")
-    data object About : Screen("about")
+    data object WeightTrack : Screen("weight_track")
 }

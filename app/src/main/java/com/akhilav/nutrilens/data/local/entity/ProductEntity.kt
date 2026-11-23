@@ -22,10 +22,31 @@ data class ProductEntity(
     val sugars: Double?,
     val fiber: Double?,
     val salt: Double?,
-
+    val vitaminA: Double? = null,
+    val vitaminC: Double? = null,
+    val vitaminD: Double? = null,
+    val vitaminB12: Double? = null,
+    val calcium: Double? = null,
+    val magnesium: Double? = null,
+    val potassium: Double? = null,
+    val zinc: Double? = null,
+    val iron: Double? = null,
     val ingredientsText: String?,
     val nutritionGrade: String?,
     val novaGroup: Int?,
+    val fatLevel: String? = null,
+    val saturatedFatLevel: String? = null,
+    val sugarLevel: String? = null,
+    val saltLevel: String? = null,
+
+    val additivesCount: Int? = null,
+    val additivesTags: String? = null,
+    val allergens: String? = null,
+    val allergensTags: String? = null,
+    val tracesTags: String? = null,
+    val ingredientsAnalysisTags: String? = null,
+    val labelsTags: String? = null,
+    val ecoScoreGrade: String? = null,
     val lastUpdated: Long = System.currentTimeMillis()
 
 )

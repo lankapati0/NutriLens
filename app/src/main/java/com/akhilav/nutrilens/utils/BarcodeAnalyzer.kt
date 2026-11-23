@@ -1,5 +1,4 @@
-
-package com.akhilav.nutriscan.ui.screens.scanner
+package com.akhilav.nutrilens.utils
 
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
@@ -8,8 +7,7 @@ import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 import java.util.concurrent.atomic.AtomicBoolean
 
-class BarcodeAnalyzer(
-    private val onBarcodeDetected: (String) -> Unit
+class BarcodeAnalyzer(private val onBarcodeDetected: (String) -> Unit
 ) : ImageAnalysis.Analyzer {
 
     private val scanner = BarcodeScanning.getClient()

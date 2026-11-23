@@ -15,6 +15,7 @@ import javax.inject.Singleton
 private val Context.nutritionDataStore by preferencesDataStore(
     name = "nutrition_preferences"
 )
+
 @Singleton
 class NutritionPreferences @Inject constructor(
     @ApplicationContext private val context: Context
@@ -34,6 +35,10 @@ class NutritionPreferences @Inject constructor(
 
         val WATER_REMINDER_MINUTE = intPreferencesKey("water_reminder_minute")
         val NOTIFICATIONS_ENABLED = booleanPreferencesKey("notifications_enabled")
+        val VEGAN_ENABLED = booleanPreferencesKey("vegan_enabled")
+        val VEGETARIAN_ENABLED = booleanPreferencesKey("vegetarian_enabled")
+        val GLUTEN_FREE_ENABLED = booleanPreferencesKey("gluten_free_enabled")
+        val DAIRY_FREE_ENABLED = booleanPreferencesKey("dairy_free_enabled")
     }
 
     val dailyCalorieTarget: Flow<Double> = context.nutritionDataStore.data.map { preferences ->
@@ -93,6 +98,27 @@ class NutritionPreferences @Inject constructor(
             preferences[NOTIFICATIONS_ENABLED] ?: true
     }
 
+    val veganEnabled: Flow<Boolean> =
+        context.nutritionDataStore.data.map { preferences ->
+            preferences[VEGAN_ENABLED] ?: true
+    }
+
+    val vegetarianEnabled: Flow<Boolean> =
+        context.nutritionDataStore.data.map { preferences ->
+            preferences[VEGETARIAN_ENABLED] ?: true
+    }
+
+    val glutenFreeEnabled: Flow<Boolean> =
+        context.nutritionDataStore.data.map { preferences ->
+            preferences[GLUTEN_FREE_ENABLED] ?: true
+    }
+
+    val dairyFreeEnabled: Flow<Boolean> =
+        context.nutritionDataStore.data.map { preferences ->
+            preferences[DAIRY_FREE_ENABLED] ?: true
+    }
+
+
     suspend fun saveDailyCalorieTarget(target: Double){
         context.nutritionDataStore.edit { preferences ->
             preferences[DAILY_CALORIE_TARGET] = target
@@ -151,6 +177,30 @@ class NutritionPreferences @Inject constructor(
     suspend fun saveNotificationEnabled(enabled: Boolean){
         context.nutritionDataStore.edit { preferences ->
             preferences[NOTIFICATIONS_ENABLED] = enabled
+        }
+    }
+
+    suspend fun saveVeganEnabled(enabled: Boolean){
+        context.nutritionDataStore.edit { preferences ->
+            preferences[VEGAN_ENABLED] = enabled
+        }
+    }
+
+    suspend fun saveVegetarianEnabled(enabled: Boolean){
+        context.nutritionDataStore.edit { preferences ->
+            preferences[VEGETARIAN_ENABLED] = enabled
+        }
+    }
+
+    suspend fun saveGlutenFreeEnabled(enabled: Boolean){
+        context.nutritionDataStore.edit { preferences ->
+            preferences[GLUTEN_FREE_ENABLED] = enabled
+        }
+    }
+
+    suspend fun saveDairyFreeEnabled(enabled: Boolean){
+        context.nutritionDataStore.edit { preferences ->
+            preferences[DAIRY_FREE_ENABLED] = enabled
         }
     }
 

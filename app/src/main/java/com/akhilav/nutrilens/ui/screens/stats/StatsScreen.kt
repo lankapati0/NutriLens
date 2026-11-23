@@ -12,8 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,16 +21,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.akhilav.nutrilens.ui.theme.BrandDeepTeal
 import com.akhilav.nutrilens.ui.theme.BrandMint
 import com.akhilav.nutrilens.ui.theme.BrandOceanTeal
-import com.akhilav.nutrilens.ui.theme.component.GlassCard
+import com.akhilav.nutrilens.ui.component.GlassCard
 import com.akhilav.nutrilens.viewmodels.HomeNutritionViewModel
-import com.patrykandpatrick.vico.compose.cartesian.CartesianChart
+import com.akhilav.nutrilens.viewmodels.weightEntry.WeightViewModel
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.compose.cartesian.axis.VerticalAxis
@@ -51,7 +48,7 @@ import java.util.Locale
 
 @Composable
 fun StatsScreen(
-    viewModel: HomeNutritionViewModel = hiltViewModel()
+    viewModel: HomeNutritionViewModel = hiltViewModel(),
 ) {
     val summary by viewModel.todaysConsumption.collectAsStateWithLifecycle()
     val calorieTarget by viewModel.dailyCaloriesTarget.collectAsStateWithLifecycle()
@@ -209,6 +206,7 @@ fun StatsScreen(
     val chartLabels = chartEntries.mapNotNull { (label, calories) ->
         label.takeIf { calories != null }
     }
+
 
     LaunchedEffect(chartValues) {
         if (chartValues.isNotEmpty()) {

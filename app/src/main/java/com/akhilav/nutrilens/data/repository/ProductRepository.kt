@@ -55,9 +55,31 @@ class ProductRepository @Inject constructor(
         sugars = nutriments?.sugars,
         fiber = nutriments?.fiber,
         salt = nutriments?.salt,
+        vitaminA = nutriments?.vitaminA,
+        vitaminC = nutriments?.vitaminC,
+        vitaminD = nutriments?.vitaminD,
+        vitaminB12 = nutriments?.vitaminB12,
+        calcium = nutriments?.calcium,
+        magnesium = nutriments?.magnesium,
+        iron = nutriments?.iron,
+        potassium = nutriments?.potassium,
+        zinc = nutriments?.zinc,
         ingredientsText = ingredientsText,
         nutritionGrade = nutritionGrade,
-        novaGroup = novaGroup
+        novaGroup = novaGroup,
+        fatLevel = nutrientLevels?.fat,
+        saturatedFatLevel = nutrientLevels?.saturatedFat,
+        sugarLevel = nutrientLevels?.sugars,
+        saltLevel = nutrientLevels?.salt,
+
+        additivesCount = additivesCount,
+        additivesTags = additivesTags?.joinToString(","),
+        allergens = allergens,
+        allergensTags = allergensTags?.joinToString(","),
+        tracesTags = tracesTags?.joinToString(","),
+        ingredientsAnalysisTags = ingredientsAnalysisTags?.joinToString(","),
+        labelsTags = labelsTags?.joinToString(","),
+        ecoScoreGrade = ecoScoreGrade
     )
 
     fun searchProduct(query: String): Flow<List<ProductEntity>>{

@@ -26,13 +26,39 @@ class ReportExportManager @Inject constructor(
 
         val page = pdfDocument.startPage(pageInfo)
         val canvas = page.canvas
-        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.BLACK
-            textSize = 20f
+
+
+        val backgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.rgb(244, 247, 243)
         }
-        canvas.drawText(title,40f,60f,paint)
-        paint.textSize = 13f
-        var yPosition = 100f
+        canvas.drawColor(Color.rgb(244, 247, 243))
+
+        val headerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.rgb(18, 107, 104)
+        }
+        canvas.drawRoundRect(
+            25f, 25f, 570f, 115f,
+            22f, 22f, headerPaint
+        )
+
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.WHITE
+            textSize = 24f
+            typeface = android.graphics.Typeface.create(
+                android.graphics.Typeface.DEFAULT,
+                android.graphics.Typeface.BOLD
+            )
+        }
+        canvas.drawText(title, 45f, 78f, paint)
+
+        paint.color = Color.rgb(25, 49, 57)
+        paint.textSize = 14f
+        paint.typeface = android.graphics.Typeface.create(
+            android.graphics.Typeface.DEFAULT,
+            android.graphics.Typeface.NORMAL
+        )
+
+        var yPosition = 155f
 
         content.lines().forEach { line ->
             if(yPosition > 790f) return@forEach
@@ -43,6 +69,7 @@ class ReportExportManager @Inject constructor(
 
         // Following pages: charts
         charts.forEach { (chartTitle,bitmap) ->
+
             val chartPageInfo = PdfDocument.PageInfo.Builder(
                 pageWidth, pageHeight, pageNumber++
             ).create()
@@ -50,14 +77,31 @@ class ReportExportManager @Inject constructor(
             val chartPage = pdfDocument.startPage(chartPageInfo)
             val chartCanvas = chartPage.canvas
 
-            val titlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                color = Color.BLACK
-                textSize = 20f
+
+            chartCanvas.drawColor(Color.rgb(244, 247, 243))
+
+            val chartHeaderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                color = Color.rgb(18, 107, 104)
             }
 
-            chartCanvas.drawText(chartTitle,40f,60f,titlePaint)
-            val availableWidth = pageWidth - 60f
-            val availableHeight = 550f
+            chartCanvas.drawRoundRect(
+                25f, 25f, 570f, 105f,
+                22f, 22f, chartHeaderPaint
+            )
+
+            val titlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                color = Color.WHITE
+                textSize = 23f
+                typeface = android.graphics.Typeface.create(
+                    android.graphics.Typeface.DEFAULT,
+                    android.graphics.Typeface.BOLD
+                )
+            }
+
+            chartCanvas.drawText(chartTitle, 45f, 120f, titlePaint)
+
+            val availableWidth = pageWidth - 80f
+            val availableHeight = 620f
 
             val scale = minOf(
                 availableWidth / bitmap.width,
