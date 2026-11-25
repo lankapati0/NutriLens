@@ -80,7 +80,7 @@ dependencies {
 
 // ML Kit
     implementation(libs.mlkit.barcode)
-
+    implementation("com.google.mlkit:image-labeling:17.0.9")
     implementation(libs.mlkit.text.recognition)
 // Retrofit and OkHttp
     implementation(libs.retrofit)

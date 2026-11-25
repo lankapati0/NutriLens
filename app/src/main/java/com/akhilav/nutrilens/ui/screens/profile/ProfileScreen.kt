@@ -89,6 +89,7 @@ fun ProfileScreen(
     profileViewModel: UserProfileViewModel = hiltViewModel(),
 ) {
     val profile by profileViewModel.profile.collectAsStateWithLifecycle()
+    val isProfileLoaded by profileViewModel.isProfileLoaded.collectAsStateWithLifecycle()
     val settingViewModel: SettingsViewModel = hiltViewModel()
     val context = LocalContext.current
     var showDatePicker by remember { mutableStateOf(false) }
@@ -181,10 +182,10 @@ fun ProfileScreen(
 
     val completedProfileItems = listOf(
         selectedImageUri != null || !profile?.profileImageUrl.isNullOrBlank(),
-        displayName.isNotBlank(),
-        dateOfBirth.isNotBlank(),
-        hasValidHeight,
-        (weightInput.toDoubleOrNull() ?: 0.0) > 0
+        !profile?.displayName.isNullOrBlank(),
+        !profile?.dateOfBirth.isNullOrBlank(),
+        (profile?.heightCm ?: 0.0) > 0,
+        (profile?.weightKg ?: 0.0) > 0
     ).count { it }
 
     val profileCompletion = completedProfileItems * 20
@@ -257,42 +258,45 @@ fun ProfileScreen(
         )
 
         // Profile Completion
-
+        if (isProfileLoaded && profileCompletion < 100) {
         GlassCard(modifier = Modifier.fillMaxWidth()) {
             Column(
                 modifier = Modifier.padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        "Profile Completion",
-                        style = MaterialTheme.typography.titleMedium
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            "Profile Completion",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+
+                        Text(
+                            "$profileCompletion%",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = BrandOceanTeal
+                        )
+                    }
+
+                    LinearProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(8.dp),
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                        color = BrandOceanTeal,
+                        progress = { profileCompletion / 100f }
                     )
 
                     Text(
-                        "$profileCompletion%",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = BrandOceanTeal
+                        "$completedProfileItems of 5 details completed",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
-                LinearProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(8.dp),
-                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                    color = BrandOceanTeal,
-                    progress = { profileCompletion / 100f }
-                )
-
-                Text(
-                    "$completedProfileItems of 5 details completed",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
             }
         }
 

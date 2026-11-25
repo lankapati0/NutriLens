@@ -1,5 +1,6 @@
 package com.akhilav.nutrilens.utils
 
+import android.graphics.Bitmap
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
@@ -49,7 +50,26 @@ class BarcodeAnalyzer(private val onBarcodeDetected: (String) -> Unit
             }
     }
 
+    fun analyze(bitmap: Bitmap, onResult:(String?)-> Unit){
+        val image = InputImage.fromBitmap(bitmap, 0)
+
+        scanner.process(image)
+            .addOnSuccessListener { barcodes ->
+                val barcode = barcodes.firstNotNullOfOrNull {
+                    it.rawValue
+                }
+                onResult(barcode)
+            }
+            .addOnFailureListener {
+                onResult(null)
+            }
+    }
+
+    fun reset(){
+        hasScanned.set(false)
+    }
+
     fun close() {
-        scanner.close()
+        hasScanned.set(false)
     }
 }
