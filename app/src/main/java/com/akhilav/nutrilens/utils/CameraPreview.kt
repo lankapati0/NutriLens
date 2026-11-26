@@ -14,8 +14,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -33,7 +35,7 @@ fun CameraPreview(modifier: Modifier = Modifier,
                   onBarcodeDetected: (String) -> Unit,
                   scanMode:String, onTextDetected:(List<IngredientTextLine>) -> Unit,
                   onFoodImageCaptured:(ImageProxy) -> Unit,
-                  barcodeResetRequest: Int,
+                  barcodeResetRequest: Int,isFlashOn: Boolean,
 ){
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -45,8 +47,16 @@ fun CameraPreview(modifier: Modifier = Modifier,
         }
     }
     val imageCapture = remember { ImageCapture.Builder().setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY).build() }
+    var camera by remember { mutableStateOf<androidx.camera.core.Camera?>(null) }
     val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
 
+    LaunchedEffect(isFlashOn,camera) {
+        camera?.let { activeCamera ->
+            if (activeCamera.cameraInfo.hasFlashUnit()) {
+                activeCamera.cameraControl.enableTorch(isFlashOn)
+            }
+        }
+    }
     DisposableEffect(cameraExecutor) {
         onDispose { cameraExecutor.shutdown() }
     }
@@ -123,7 +133,13 @@ fun CameraPreview(modifier: Modifier = Modifier,
 
             try {
                 cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(lifecycleOwner, CameraSelector.DEFAULT_BACK_CAMERA,preview,imageAnalysis,imageCapture)
+                camera = cameraProvider.bindToLifecycle(
+                    lifecycleOwner,
+                    CameraSelector.DEFAULT_BACK_CAMERA,
+                    preview,
+                    imageAnalysis,
+                    imageCapture
+                )
             }catch (e: Exception){
                 e.printStackTrace()
             }

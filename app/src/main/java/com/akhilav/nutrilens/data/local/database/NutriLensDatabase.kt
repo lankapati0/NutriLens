@@ -4,6 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.akhilav.nutrilens.data.local.dao.FastingSessionDao
 import com.akhilav.nutrilens.data.local.dao.FoodConsumptionDao
 import com.akhilav.nutrilens.data.local.dao.MealPlanDao
 import com.akhilav.nutrilens.data.local.dao.ProductDao
@@ -11,6 +12,7 @@ import com.akhilav.nutrilens.data.local.dao.ScanHistoryDao
 import com.akhilav.nutrilens.data.local.dao.UserProfileDao
 import com.akhilav.nutrilens.data.local.dao.WaterIntakeDao
 import com.akhilav.nutrilens.data.local.dao.WeightEntryDao
+import com.akhilav.nutrilens.data.local.entity.FastingSessionEntity
 import com.akhilav.nutrilens.data.local.entity.FoodConsumptionEntity
 import com.akhilav.nutrilens.data.local.entity.MealPlanEntity
 import com.akhilav.nutrilens.data.local.entity.ProductEntity
@@ -21,8 +23,9 @@ import com.akhilav.nutrilens.data.local.entity.WeightEntryEntity
 
 @Database(
     entities = [ProductEntity::class, FoodConsumptionEntity::class, ScanHistoryEntity::class, MealPlanEntity::class,
-        WaterIntakeEntity::class, UserProfileEntity::class, WeightEntryEntity::class],
-    version = 15,
+        WaterIntakeEntity::class, UserProfileEntity::class, WeightEntryEntity::class,
+        FastingSessionEntity::class],
+    version = 16,
     exportSchema = false
 )
 abstract class NutriLensDatabase : RoomDatabase(){
@@ -33,6 +36,7 @@ abstract class NutriLensDatabase : RoomDatabase(){
     abstract fun walterIntakeDao(): WaterIntakeDao
     abstract fun userProfileDao(): UserProfileDao
     abstract fun weightEntryDao(): WeightEntryDao
+    abstract fun fastingSessionDao(): FastingSessionDao
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
@@ -224,6 +228,21 @@ abstract class NutriLensDatabase : RoomDatabase(){
                 db.execSQL("ALTER TABLE products ADD COLUMN ecoScoreGrade TEXT")
             }
         }
+        val MIGRATION_15_16 = object : Migration(15, 16) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+            CREATE TABLE IF NOT EXISTS fasting_sessions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                startTime INTEGER NOT NULL,
+                endTime INTEGER,
+                targetHours INTEGER NOT NULL
+            )
+            """.trimIndent()
+                )
+            }
+        }
+
 
 
     }

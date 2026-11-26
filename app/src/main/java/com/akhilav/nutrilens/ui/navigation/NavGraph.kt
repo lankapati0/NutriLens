@@ -14,6 +14,7 @@ import androidx.navigation.compose.composable
 import com.akhilav.nutrilens.ui.screens.FoodComparison.FoodComparisonScreen
 import com.akhilav.nutrilens.ui.screens.HealthyAlternatives.HealthyAlternativesScreen
 import com.akhilav.nutrilens.ui.screens.Intelligence.IngredientIntelligenceScreen
+import com.akhilav.nutrilens.ui.screens.fasting.FastingTrackerScreen
 import com.akhilav.nutrilens.ui.screens.favorite.FavoritesScreen
 import com.akhilav.nutrilens.ui.screens.history.ScanHistoryScreen
 import com.akhilav.nutrilens.ui.screens.home.HomeScreen
@@ -24,6 +25,7 @@ import com.akhilav.nutrilens.ui.screens.reports.ReportsScreen
 import com.akhilav.nutrilens.ui.screens.scanner.ScannerScreen
 import com.akhilav.nutrilens.ui.screens.settings.SettingsScreen
 import com.akhilav.nutrilens.ui.screens.stats.StatsScreen
+import com.akhilav.nutrilens.ui.screens.track_diet.TrackDietScreen
 import com.akhilav.nutrilens.ui.screens.tracker.TrackerScreen
 import com.akhilav.nutrilens.ui.screens.waterTracker.WaterTrackerScreen
 import com.akhilav.nutrilens.ui.screens.weightTrack.WeightTrackingScreen
@@ -93,12 +95,20 @@ fun NutriLensNavGraph(
             MicronutrientScreen()
         }
 
-        composable(Screen.WeightTrack.route){
+        composable(Screen.WeightTracker.route){
             WeightTrackingScreen()
+        }
+
+        composable(Screen.TrackDiet.route){
+            TrackDietScreen()
         }
 
         composable(Screen.WaterTracker.route) {
             WaterTrackerScreen()
+        }
+
+        composable(Screen.FastingTracker.route) {
+            FastingTrackerScreen()
         }
 
         composable(Screen.Reports.route) {
@@ -108,6 +118,7 @@ fun NutriLensNavGraph(
         composable(Screen.Settings.route) {
             SettingsScreen(onThemeChange = onThemeChange, selectedTheme = selectedTheme)
         }
+
 
     }
 }

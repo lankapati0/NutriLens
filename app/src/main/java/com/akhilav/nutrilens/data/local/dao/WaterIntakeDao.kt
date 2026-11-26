@@ -20,4 +20,7 @@ interface WaterIntakeDao {
 
     @Query("""SELECT COALESCE(SUM(amountMl), 0) FROM water_intake WHERE consumedAt >= :startTime AND consumedAt < :endTime""")
     fun getTodayTotalWater(startTime: Long, endTime: Long): Flow<Int>
+
+    @Query("""SELECT * FROM water_intake WHERE consumedAt >= :startTime AND consumedAt < :endTime ORDER BY consumedAt ASC""")
+    fun getWaterIntakeBetween(startTime: Long,endTime: Long): Flow<List<WaterIntakeEntity>>
 }

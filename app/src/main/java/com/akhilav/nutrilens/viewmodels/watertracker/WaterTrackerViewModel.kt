@@ -24,6 +24,12 @@ class WaterTrackerViewModel @Inject constructor(
         emptyList()
     )
 
+    val weeklyWaterIntake = repository.getWeeklyWaterIntake().stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        emptyList()
+    )
+
     val todayTotalWater: StateFlow<Int> =
         repository.getTodayTotalWater()
             .stateIn(

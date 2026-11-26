@@ -27,6 +27,22 @@ class FoodConsumptionRepository @Inject constructor(
         return foodConsumptionDao.getDailyNutritionSummary(startTime, endTime)
     }
 
+    fun getNutritionSummaryForDate(date: LocalDate): Flow<DailyNutritionSummary>{
+        val zone = ZoneId.systemDefault()
+        val startTime = date.atStartOfDay(zone).toInstant().toEpochMilli()
+        val endTime = date.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli()
+
+        return foodConsumptionDao.getDailyNutritionSummary(startTime,endTime)
+    }
+
+    fun getConsumptionsForDate(date: LocalDate): Flow<List<FoodConsumptionEntity>> {
+        val zone = ZoneId.systemDefault()
+        val startTime = date.atStartOfDay(zone).toInstant().toEpochMilli()
+        val endTime = date.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli()
+
+        return foodConsumptionDao.getTodayConsumptions(startTime,endTime)
+    }
+
     fun getTodayMicronutrientSummary(): Flow<DailyMicronutritionSummary>{
         val zone = ZoneId.systemDefault()
         val today = LocalDate.now()

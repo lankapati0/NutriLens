@@ -2,7 +2,11 @@
 package com.akhilav.nutriscan.ui.navigation
 
 import android.util.Log
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerValue
@@ -51,17 +55,29 @@ fun NutriLensScaffold(
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
+
             ModalDrawerSheet {
 
+                // Fixed drawer header
                 Text(
                     text = "NutriLens",
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.padding(20.dp)
                 )
 
-                    drawerItems.forEach { item ->
+                // Scrollable drawer items
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(
+                        bottom = 20.dp
+                    )
+                ) {
+                    items(drawerItems) { item ->
+
                         NavigationDrawerItem(
-                            label = { Text(item.title) },
+                            label = {
+                                Text(item.title)
+                            },
                             selected = currentRoute == item.route,
                             onClick = {
                                 scope.launch {
@@ -69,16 +85,23 @@ fun NutriLensScaffold(
                                 }
 
                                 navController.navigate(item.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
+                                    popUpTo(
+                                        navController.graph.findStartDestination().id
+                                    ) {
                                         saveState = false
                                     }
+
                                     launchSingleTop = true
                                 }
                             },
-                            modifier = Modifier.padding(horizontal = 12.dp)
+                            modifier = Modifier.padding(
+                                horizontal = 12.dp
+                            )
                         )
+                    }
                 }
             }
+
         }
     ) {
         Scaffold(

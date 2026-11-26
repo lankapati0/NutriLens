@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -31,6 +32,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.FlashOff
+import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Restaurant
@@ -105,6 +108,7 @@ fun ScannerScreen(
     var recognizedText by remember { mutableStateOf<List<IngredientTextLine>?>(null) }
     var foodResults by remember {mutableStateOf<List<FoodRecognitionResult>>(emptyList())}
     var showScanModes by remember { mutableStateOf(false) }
+    var isFlashOn by remember { mutableStateOf(false) }
     val foodImageAnalyzer = remember {
         FoodImageAnalyzer {labels ->
             foodResults = labels.map { labels ->
@@ -253,6 +257,7 @@ fun ScannerScreen(
 
             // Camera preview
             CameraPreview(
+                isFlashOn = isFlashOn,
                 barcodeResetRequest = barcodeResetRequest,
                 onBarcodeDetected = { barcode ->
                     scannerBarcode = barcode
@@ -445,31 +450,56 @@ fun ScannerScreen(
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(12.dp))
-                        LargeFloatingActionButton(
-                            onClick = {
-                                when (scanMode) {
-                                    "freshFood", "ingredient" -> {
-                                        foodResults = emptyList()
-                                        nutrientRows = emptyList()
-                                        ingredientData = null
-                                        captureRequest++
-                                    }
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                                    "barcode" -> {
-                                        barcodeResetRequest++
-                                    }
-                                }
-                            },
-                            containerColor = Color.White,
-                            contentColor = Color(0xFF171D20),
-                            shape = CircleShape
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(80.dp),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(18.dp),
-                                verticalAlignment = Alignment.CenterVertically
+                            // Flash button — left
+                            Surface(
+                                onClick = {
+                                    isFlashOn = !isFlashOn
+                                },
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                                    .offset(x = (-76).dp)
+                                    .size(48.dp),
+                                shape = CircleShape,
+                                color = Color.White.copy(alpha = 0.15f),
+                                border = BorderStroke(
+                                    1.dp,
+                                    Color.White.copy(alpha = 0.35f)
+                                )
                             ) {
-                                LargeFloatingActionButton(
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        imageVector = if (isFlashOn) {
+                                            Icons.Default.FlashOn
+                                        } else {
+                                            Icons.Default.FlashOff
+                                        },
+                                        contentDescription = "Flash",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(23.dp)
+                                    )
+                                }
+                            }
+
+                            // Camera shutter — center
+                            Box(
+                                modifier = Modifier
+                                    .size(76.dp)
+                                    .border(
+                                        3.dp,
+                                        Color.White.copy(alpha = 0.7f),
+                                        CircleShape
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Surface(
                                     onClick = {
                                         when (scanMode) {
                                             "freshFood", "ingredient" -> {
@@ -484,57 +514,48 @@ fun ScannerScreen(
                                             }
                                         }
                                     },
-                                    containerColor = Color.White,
-                                    contentColor = Color(0xFF171D20),
-                                    shape = CircleShape
-                                ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(64.dp)
-                                            .border(
-                                                width = 2.dp,
-                                                color = Color(0xFF171D20).copy(alpha = 0.15f),
-                                                shape = CircleShape
-                                            )
-                                            .padding(5.dp)
-                                            .background(Color.White, CircleShape),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.CameraAlt,
-                                            contentDescription = "Capture food",
-                                            modifier = Modifier.size(30.dp)
-                                        )
-                                    }
-                                }
-                                Surface(
-                                    onClick = {
-                                        if (scanMode != "idle") {
-                                            galleryPickerLauncher.launch("image/*")
-                                        }
-                                    },
-                                    modifier = Modifier.size(56.dp),
+                                    modifier = Modifier.size(62.dp),
                                     shape = CircleShape,
-                                    color = Color.Black,
-                                    border = BorderStroke(
-                                        1.dp,
-                                        Color.White.copy(alpha = 0.35f)
-                                    )
+                                    color = Color.White
                                 ) {
                                     Box(contentAlignment = Alignment.Center) {
                                         Icon(
-                                            imageVector = Icons.Default.PhotoLibrary,
-                                            contentDescription = "Choose image from gallery",
-                                            tint = Color.White,
-                                            modifier = Modifier.size(26.dp)
+                                            imageVector = Icons.Default.CameraAlt,
+                                            contentDescription = "Capture",
+                                            tint = Color(0xFF171D20),
+                                            modifier = Modifier.size(28.dp)
                                         )
                                     }
                                 }
+                            }
 
+                            // Gallery button — right
+                            Surface(
+                                onClick = {
+                                        galleryPickerLauncher.launch("image/*")
+                                },
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                                    .offset(x = 76.dp)
+                                    .size(48.dp),
+                                shape = CircleShape,
+                                color = Color.White.copy(alpha = 0.15f),
+                                border = BorderStroke(
+                                    1.dp,
+                                    Color.White.copy(alpha = 0.35f)
+                                )
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        imageVector = Icons.Default.PhotoLibrary,
+                                        contentDescription = "Gallery",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(23.dp)
+                                    )
+                                }
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(8.dp))
 
                         Text(
                             text = when (scanMode) {

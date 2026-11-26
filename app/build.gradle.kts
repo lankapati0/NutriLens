@@ -78,6 +78,7 @@ dependencies {
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
 
+    implementation("androidx.health.connect:connect-client:1.2.0-alpha06")
 // ML Kit
     implementation(libs.mlkit.barcode)
     implementation("com.google.mlkit:image-labeling:17.0.9")

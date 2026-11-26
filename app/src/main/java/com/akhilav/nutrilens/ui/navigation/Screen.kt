@@ -17,5 +17,7 @@ sealed class Screen(val route:String){
     data object WaterTracker : Screen("water_tracker")
     data object Reports : Screen("reports")
     data object Settings : Screen("settings")
-    data object WeightTrack : Screen("weight_track")
+    data object WeightTracker : Screen("weight_track")
+    data object FastingTracker : Screen("fasting")
+    data object TrackDiet : Screen("track_diet")
 }
