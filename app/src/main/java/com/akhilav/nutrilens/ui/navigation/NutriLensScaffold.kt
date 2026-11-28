@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -51,6 +53,16 @@ fun NutriLensScaffold(
 
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
+    val detailRoutes = setOf(
+        Screen.SleepDetail.route,
+        Screen.WeightDetail.route,
+        Screen.WaterDetail.route,
+        Screen.FastingDetail.route,
+        Screen.HistoryDetail.route,
+        Screen.MealPlannerDetail.route
+    )
+
+    val isDetailScreen = currentRoute in detailRoutes
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -108,19 +120,35 @@ fun NutriLensScaffold(
             topBar = {
                 TopAppBar(
                     title = {
-                        Text("NutriLens")
+                        Text(text = when(currentRoute){
+                            Screen.SleepDetail.route -> "Sleep Details"
+                            Screen.WeightDetail.route -> "Weight Details"
+                            else -> "NutriLens"
+                        })
                     },
                     navigationIcon = {
                         IconButton(
                             onClick = {
-                                scope.launch {
-                                    drawerState.open()
+                                if (isDetailScreen) {
+                                    navController.popBackStack()
+                                } else {
+                                    scope.launch {
+                                        drawerState.open()
+                                    }
                                 }
                             }
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = "Open menu"
+                                imageVector = if (isDetailScreen) {
+                                    Icons.Default.ArrowBack
+                                } else {
+                                    Icons.Default.Menu
+                                },
+                                contentDescription = if (isDetailScreen) {
+                                    "Go back"
+                                } else {
+                                    "Open menu"
+                                }
                             )
                         }
                     }

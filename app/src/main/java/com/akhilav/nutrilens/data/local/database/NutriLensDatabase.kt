@@ -9,6 +9,7 @@ import com.akhilav.nutrilens.data.local.dao.FoodConsumptionDao
 import com.akhilav.nutrilens.data.local.dao.MealPlanDao
 import com.akhilav.nutrilens.data.local.dao.ProductDao
 import com.akhilav.nutrilens.data.local.dao.ScanHistoryDao
+import com.akhilav.nutrilens.data.local.dao.SleepDao
 import com.akhilav.nutrilens.data.local.dao.UserProfileDao
 import com.akhilav.nutrilens.data.local.dao.WaterIntakeDao
 import com.akhilav.nutrilens.data.local.dao.WeightEntryDao
@@ -17,6 +18,7 @@ import com.akhilav.nutrilens.data.local.entity.FoodConsumptionEntity
 import com.akhilav.nutrilens.data.local.entity.MealPlanEntity
 import com.akhilav.nutrilens.data.local.entity.ProductEntity
 import com.akhilav.nutrilens.data.local.entity.ScanHistoryEntity
+import com.akhilav.nutrilens.data.local.entity.SleepEntity
 import com.akhilav.nutrilens.data.local.entity.UserProfileEntity
 import com.akhilav.nutrilens.data.local.entity.WaterIntakeEntity
 import com.akhilav.nutrilens.data.local.entity.WeightEntryEntity
@@ -24,8 +26,8 @@ import com.akhilav.nutrilens.data.local.entity.WeightEntryEntity
 @Database(
     entities = [ProductEntity::class, FoodConsumptionEntity::class, ScanHistoryEntity::class, MealPlanEntity::class,
         WaterIntakeEntity::class, UserProfileEntity::class, WeightEntryEntity::class,
-        FastingSessionEntity::class],
-    version = 16,
+        FastingSessionEntity::class, SleepEntity::class],
+    version = 17,
     exportSchema = false
 )
 abstract class NutriLensDatabase : RoomDatabase(){
@@ -37,6 +39,7 @@ abstract class NutriLensDatabase : RoomDatabase(){
     abstract fun userProfileDao(): UserProfileDao
     abstract fun weightEntryDao(): WeightEntryDao
     abstract fun fastingSessionDao(): FastingSessionDao
+    abstract fun sleepDao(): SleepDao
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
@@ -242,7 +245,29 @@ abstract class NutriLensDatabase : RoomDatabase(){
                 )
             }
         }
+        val MIGRATION_16_17 = object : Migration(16, 17) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+            CREATE TABLE IF NOT EXISTS sleep_records (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                date TEXT NOT NULL,
+                bedtime TEXT NOT NULL,
+                wakeUpTime TEXT NOT NULL,
+                totalSleepMinutes INTEGER NOT NULL,
+                awakeMinutes INTEGER NOT NULL,
+                remMinutes INTEGER NOT NULL,
+                lightMinutes INTEGER NOT NULL,
+                deepMinutes INTEGER NOT NULL,
+                sleepScore INTEGER NOT NULL,
+                sleepGoalMinutes INTEGER NOT NULL
+            )
+            """.trimIndent()
+                )
+            }
+        }
 
+        
 
 
     }

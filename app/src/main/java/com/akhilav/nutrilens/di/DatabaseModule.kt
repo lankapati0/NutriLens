@@ -8,6 +8,7 @@ import com.akhilav.nutrilens.data.local.dao.FoodConsumptionDao
 import com.akhilav.nutrilens.data.local.dao.MealPlanDao
 import com.akhilav.nutrilens.data.local.dao.ProductDao
 import com.akhilav.nutrilens.data.local.dao.ScanHistoryDao
+import com.akhilav.nutrilens.data.local.dao.SleepDao
 import com.akhilav.nutrilens.data.local.dao.UserProfileDao
 import com.akhilav.nutrilens.data.local.dao.WaterIntakeDao
 import com.akhilav.nutrilens.data.local.dao.WeightEntryDao
@@ -35,7 +36,7 @@ object DatabaseModule {
                 NutriLensDatabase.MIGRATION_9_10,NutriLensDatabase.MIGRATION_10_11,
                 NutriLensDatabase.MIGRATION_11_12, NutriLensDatabase.MIGRATION_12_13,
                 NutriLensDatabase.MIGRATION_13_14, NutriLensDatabase.MIGRATION_14_15,
-                NutriLensDatabase.MIGRATION_15_16)
+                NutriLensDatabase.MIGRATION_15_16, NutriLensDatabase.MIGRATION_16_17)
             .build()
     }
 
@@ -75,4 +76,7 @@ object DatabaseModule {
     @Singleton
     fun provideFastingSessionDao(database: NutriLensDatabase): FastingSessionDao = database.fastingSessionDao()
 
+    @Provides
+    @Singleton
+    fun provideSleepDao(database: NutriLensDatabase): SleepDao = database.sleepDao()
 }

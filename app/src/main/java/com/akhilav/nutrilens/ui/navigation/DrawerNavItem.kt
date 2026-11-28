@@ -10,6 +10,7 @@ val drawerItems = listOf(
     DrawerNavItem("Ingredient Intelligence", Screen.Ingredients.route),
     DrawerNavItem("Meal Planner", Screen.MealPlanner.route),
     DrawerNavItem("Track Diet", Screen.TrackDiet.route),
+    DrawerNavItem("Sleep Tracker", Screen.SleepTracker.route),
     DrawerNavItem("Micronutrients",Screen.MicroNutrients.route),
     DrawerNavItem("Weight Tracker", Screen.WeightTracker.route),
     DrawerNavItem("Water Tracker", Screen.WaterTracker.route),
@@ -21,7 +22,7 @@ val drawerItems = listOf(
     DrawerNavItem("Fitness Goals", "dummy3"),
     DrawerNavItem("Health Reports", "dummy4"),
     DrawerNavItem("Daily Challenges", "dummy5"),
-    DrawerNavItem("Sleep Tracker", "dummy6"),
+
     DrawerNavItem("Activity History", "dummy7"),
     DrawerNavItem("Wellness Tips", "dummy8"),
     DrawerNavItem("My Achievements", "dummy9"),
